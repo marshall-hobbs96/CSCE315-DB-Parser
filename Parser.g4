@@ -16,9 +16,9 @@ atomic_expression : (relation_name | expr);
 
 selection : 'select' ('('condition')' | condition) atomic_expression;
 
-condition : conjunction *('||' conjunction)*;
+condition : conjunction ('||' conjunction)*;
 
-conjunction : comparison *('&&' comparison)*;
+conjunction : comparison ('&&' comparison)*;
 
 comparison : operand op operand | ('('condition')' | condition);
 
@@ -28,11 +28,11 @@ operand : attribute_name | literal;
 
 attribute_name : identifier;
 
-//literal :  ??????????????????????????????????????????????????? << need to find out what the hell that is
+literal : Alpha+ | Digit+;
 
 projection : 'project' '('attribute_list')' atomic_expression;
 
-attribute_list : attribute_name ',' attribute_name*;
+attribute_list : attribute_name (',' attribute_name)*;
 
 renaming : 'rename' '('attribute_list')' atomic_expression;
 
@@ -56,6 +56,19 @@ exit_cmd : 'exit';
 
 show_cmd : 'show' atomic_expression;
 
-create_cmd : 'create table' realtion_name '('typed_attribute_list')' 'primary key' '('attribute_list')';
+create_cmd : 'create table' relation_name '('typed_attribute_list')' 'primary key' '('attribute_list')';
 
-update_cmd : 'update' relation_name 'set' 
+update_cmd : ('update' relation_name 'set' attribute_name '=' literal (',' literal)*) | ('insert into' relation_name 'values from relation' expr);
+
+insert_cmd : ('insert into' relation_name 'values from' (literal (','literal)*)) | ('insert into' relation_name 'values from relation' expr);  
+
+delete_cmd : 'delete from' relation_name 'where' condition; 
+
+typed_attribute_list : attribute_name type (',' attribute_name type)*;
+
+type : ('varchar' '('integer')') | 'integer';
+
+integer : Digit+;
+
+
+// * means 0 or more, + means 1 or more, ? means 0 or 1. Works with predefined objects or numbers or whatever 
