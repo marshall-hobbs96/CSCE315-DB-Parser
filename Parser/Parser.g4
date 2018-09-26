@@ -47,7 +47,7 @@ literal : '"'? (Alpha+ | Digit+) '"'?;
 
 projection : 'project'  '('attribute_list')' atomic_expression;
 
-attribute_list : attribute_name (',' attribute_name)*;
+attribute_list : attribute_name (', ' attribute_name)*;
 
 renaming : 'rename' '('attribute_list')' atomic_expression;
 
@@ -93,7 +93,7 @@ delete_cmd : 'DELETE FROM' relation_name 'WHERE' condition; 		//deletes data fro
 
 
 //miscellanous stuff including list
-typed_attribute_list : attribute_name  type (','  attribute_name type)*;
+typed_attribute_list : attribute_name  type (', '  attribute_name type)*;
 
 type :  (('VARCHAR' '('integer')') | 'INTEGER');
 

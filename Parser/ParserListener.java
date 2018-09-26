@@ -7,6 +7,16 @@ import org.antlr.v4.runtime.tree.ParseTreeListener;
  */
 public interface ParserListener extends ParseTreeListener {
 	/**
+	 * Enter a parse tree produced by {@link ParserParser#program}.
+	 * @param ctx the parse tree
+	 */
+	void enterProgram(ParserParser.ProgramContext ctx);
+	/**
+	 * Exit a parse tree produced by {@link ParserParser#program}.
+	 * @param ctx the parse tree
+	 */
+	void exitProgram(ParserParser.ProgramContext ctx);
+	/**
 	 * Enter a parse tree produced by {@link ParserParser#query}.
 	 * @param ctx the parse tree
 	 */
@@ -56,6 +66,16 @@ public interface ParserListener extends ParseTreeListener {
 	 * @param ctx the parse tree
 	 */
 	void exitAtomic_expression(ParserParser.Atomic_expressionContext ctx);
+	/**
+	 * Enter a parse tree produced by {@link ParserParser#two_identifiers}.
+	 * @param ctx the parse tree
+	 */
+	void enterTwo_identifiers(ParserParser.Two_identifiersContext ctx);
+	/**
+	 * Exit a parse tree produced by {@link ParserParser#two_identifiers}.
+	 * @param ctx the parse tree
+	 */
+	void exitTwo_identifiers(ParserParser.Two_identifiersContext ctx);
 	/**
 	 * Enter a parse tree produced by {@link ParserParser#selection}.
 	 * @param ctx the parse tree
