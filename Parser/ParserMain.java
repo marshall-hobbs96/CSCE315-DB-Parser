@@ -1,4 +1,8 @@
 import java.util.Scanner;
+import java.io.File;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.io.BufferedWriter;
 import org.antlr.v4.runtime.*;
 import org.antlr.v4.tool.*;
 import org.antlr.v4.runtime.tree.*;
@@ -42,30 +46,68 @@ public class ParserMain {
 		
 		public static void main(String[] args) {
 			Scanner keyboard = new Scanner(System.in);
-			int lineNumber = 1;
-			//Use isValid() to check the validity of each nonempty line in the input, and then print the results
-			while (keyboard.hasNextLine()) {
-				if(keyboard.hasNext()){
-					String inputLine = keyboard.nextLine();
-					//Make sure the line isn't empty
-					if (!inputLine.isEmpty()){
-						//Check validity
-						Boolean valid = isValid(inputLine);
-						//Print appropriate result
-						if (valid == true) {
-							System.out.print("Line ");
-							System.out.print(lineNumber);
-							System.out.println(" is valid");
+			BufferedWriter bufferout = null;
+			try{
+				int lineNumber = 1;
+				File outfile = new File("output.txt");
+				if(!outfile.exists()){
+					outfile.createNewFile();
+				}
+				FileWriter outwriter = new FileWriter(outfile);
+				bufferout = new BufferedWriter(outwriter);
+				//Use isValid() to check the validity of each nonempty line in the input, and then print the results
+				while (keyboard.hasNextLine()) {
+					if(keyboard.hasNext()){
+						String inputLine = keyboard.nextLine();
+						//Make sure the line isn't empty
+						if (!inputLine.isEmpty()){
+							//Check validity
+							Boolean valid = isValid(inputLine);
+							//Print appropriate result
+							if (valid == true) {
+								System.out.print("Line ");
+								bufferout.write("Line ");
+								System.out.print(lineNumber);
+								bufferout.write(lineNumber+"");
+								System.out.println(" is valid");
+								bufferout.write(" is valid\n");
+							}
+							else if (valid == false) {
+								System.out.print("Line ");
+								bufferout.write("Line ");
+								System.out.print(lineNumber);
+								bufferout.write(lineNumber+"");
+								System.out.println(" is invalid");
+								bufferout.write(" is invalid\n");
+							}
+							//Move to the next line
+							lineNumber = lineNumber + 1;
 						}
-						else if (valid == false) {
-							System.out.print("Line ");
-							System.out.print(lineNumber);
-							System.out.println(" is invalid");
-						}
-						//Move to the next line
-						lineNumber = lineNumber + 1;
 					}
+				}
+			}
+			catch(IOException ioe){
+				ioe.printStackTrace();
+			}
+			finally
+			{
+				try{
+					if(bufferout!=null)
+						bufferout.close();
+				}
+				catch(Exception ex){
+					System.out.println("error");
 				}
 			}
 		}
 }
+
+
+
+
+
+
+
+
+
+
