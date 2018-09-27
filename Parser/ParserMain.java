@@ -9,12 +9,14 @@ public class ParserMain {
 				//If no exception is thrown, the input is valid...
 				try{
 					//Check the input against the lexer and parser grammar
+					//Help from https://www.baeldung.com/java-antlr
 					ANTLRInputStream input = new ANTLRInputStream(testString);
 					ParserLexer lexer = new ParserLexer(input);
 					lexer.removeErrorListeners();
 					CommonTokenStream tokens = new CommonTokenStream(lexer);
 					ParserParser parser = new ParserParser(tokens);
 					//Allow the input to throw an error if it doesn't match the grammar.
+					//Help from https://github.com/antlr/antlr4/issues/351
 					parser.setErrorHandler(
 						new DefaultErrorStrategy() {
 							@Override
