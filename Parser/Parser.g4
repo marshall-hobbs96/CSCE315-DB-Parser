@@ -82,7 +82,7 @@ create_cmd : 'CREATE TABLE'  relation_name '('typed_attribute_list')'  'PRIMARY 
 
 update_cmd : ('UPDATE' relation_name 'SEE' attribute_name '=' literal (',' literal)*) | ('INSERT INTO' relation_name 'VALUES FROM RELATION' expr);		//updates a relation's attribute with a new attribute. Alternatively, just adds another attribute to the relation
 
-insert_cmd : ('INSERT INTO'  relation_name  ('VALUES FROM' | 'VALUES FROM RELATION')  '('?  ((literal (', 'literal)*) | expr)  ')'?); // | ('INSERT INTO'  relation_name 'VALUES FROM RELATION'  expr);  			//inserts into a relations attribute a new value
+insert_cmd : ('INSERT INTO'  relation_name  ('VALUES FROM' | 'VALUES FROM RELATION') ( '(' (literal (', 'literal)*)')' | expr)); // | ('INSERT INTO'  relation_name 'VALUES FROM RELATION'  expr);  			//inserts into a relations attribute a new value
 
 delete_cmd : 'DELETE FROM' relation_name 'WHERE' condition; 		//deletes data from a attribute
 
@@ -101,5 +101,5 @@ integer : Digit+;
 
 WS : [\t\n\r]+ -> skip;
 
-
+ErrorChar: . ;
 // * means 0 or more, + means 1 or more, ? means 0 or 1. Works with predefined objects or numbers or whatever 
