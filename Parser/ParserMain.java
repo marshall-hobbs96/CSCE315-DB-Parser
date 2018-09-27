@@ -63,14 +63,26 @@ public class ParserMain {
 						if (!inputLine.isEmpty()){
 							//Check validity
 							Boolean valid = isValid(inputLine);
+							//Make sure the line ends in a semicolon
+							String lastChar = inputLine.substring(inputLine.length() - 1);
 							//Print appropriate result
 							if (valid == true) {
-								System.out.print("Line ");
-								bufferout.write("Line ");
-								System.out.print(lineNumber);
-								bufferout.write(lineNumber+"");
-								System.out.println(" is valid");
-								bufferout.write(" is valid\n");
+								if (lastChar.equals(";")) {
+									System.out.print("Line ");
+									bufferout.write("Line ");
+									System.out.print(lineNumber);
+									bufferout.write(lineNumber+"");
+									System.out.println(" is valid");
+									bufferout.write(" is valid\n");
+								}
+								else if (!lastChar.equals(";")) {
+									System.out.print("Line ");
+									bufferout.write("Line ");
+									System.out.print(lineNumber);
+									bufferout.write(lineNumber+"");
+									System.out.println(" is invalid");
+									bufferout.write(" is invalid\n");
+								}
 							}
 							else if (valid == false) {
 								System.out.print("Line ");
