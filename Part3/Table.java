@@ -4,15 +4,23 @@ import java.util.*;
 public class Table{
 	public String title;
 	public ArrayList<ArrayList<String>> datas;
+	public ArrayList<Integer> pKey;
 	
 	//d needs to be a vector of vectors, [0] is name of vector,
 	//[1] is the char limit, null when int
-	public Table(String name,ArrayList<ArrayList<String>> d){ //d needs to be a vector of vectors
+	public Table(String name,ArrayList<ArrayList<String>> d, ArrayList<String> pKey){ //d needs to be a vector of vectors
 		title = name;
 		datas=d;
+		//add primary key
+		
+	}
+	public String getName(){
+		return title;
 	}
 	
 	public void addElement(ArrayList<String> ele){ // ele holds the input elements in order
+		//check for uniqueness
+		
 		for(int i = 0;i<ele.size();i++){
 			datas.get(i).add(ele.get(i));
 		}
@@ -51,7 +59,7 @@ public class Table{
 	}
 	
 	public static void main(String[] args) {
-		String name = "dog";
+	/*	String name = "dog";
 		ArrayList<ArrayList<String>> v = new ArrayList<ArrayList<String>>();
 		ArrayList<String> d1 = new ArrayList<String>();
 		d1.add("name");
@@ -74,6 +82,6 @@ public class Table{
 		//test.deleteElement(3);
 		System.out.println(test.searchColumn("name","ex"));
 		test.tablePrint();
-		
+		*/
 	}
 }
