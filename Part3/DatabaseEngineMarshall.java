@@ -30,6 +30,9 @@ public class DatabaseEngine{
 				
 				else {
 					
+					PrintWriter writer = new PrintWriter(file);
+					return writer; 
+					
 				}
 				
 			}
