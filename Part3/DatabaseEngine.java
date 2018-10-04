@@ -1,4 +1,5 @@
 import java.util.*;
+import java.lang.*;
 
 
 public class DatabaseEngine{
@@ -21,7 +22,8 @@ public class DatabaseEngine{
 	}
 	
 	public void exitD(){
-		
+		System.exit(0);
+		return;
 	}
 	
 	public void showD(String name){
@@ -133,6 +135,11 @@ public class DatabaseEngine{
 		System.out.println("Before Delete is called on dogs the engine holds "+ String.valueOf(engine.tables.size())+ " relations");
 		engine.deleteD(name);
 		System.out.println("After Delete is called on dogs the engine holds "+ String.valueOf(engine.tables.size())+ " relations");
+		
+		//calls exit
+		System.out.println();
+		System.out.println("Calling Exit...");
+		engine.exitD();
 	}
 	
 	
