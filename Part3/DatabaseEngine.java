@@ -61,26 +61,208 @@ public class DatabaseEngine{
 		}
 	}
 	
-	public void selectionD(){
+		
+	public ArrayList<String> equal(String tableName, String column, String value){
+		ArrayList<String> equalRows = new ArrayList<String>();
+		for (int i = 0; i < tables.size(); i++) {
+			if (tables.get(i).getName().equals(tableName)) {
+				for (int j = 0; j < ((tables.get(i)).datas).size(); j++) {
+					if ((tables.get(i).datas.get(j).get(0)).equals(column)) {
+						for (int k = 2; k < (tables.get(i).datas.get(j)).size(); k++) {
+							if (tables.get(i).datas.get(j).get(k).equals(value)) {
+								equalRows.add(Integer.toString(k));		//help from http://javadevnotes.com/java-integer-to-string-examples
+							}
+						}
+					}
+				}
+			}
+		}
+		return equalRows;
 	}
 	
-	public void projectionD(){
+	public ArrayList<String> notEqual(String tableName, String column, String value){
+		ArrayList<String> notEqualRows = new ArrayList<String>();
+		for (int i = 0; i < tables.size(); i++) {
+			if (tables.get(i).getName().equals(tableName)) {
+				for (int j = 0; j < ((tables.get(i)).datas).size(); j++) {
+					if ((tables.get(i).datas.get(j).get(0)).equals(column)) {
+						for (int k = 2; k < (tables.get(i).datas.get(j)).size(); k++) {
+							if (!tables.get(i).datas.get(j).get(k).equals(value)) {
+								notEqualRows.add(Integer.toString(k));
+							}
+						}
+					}
+				}
+			}
+		}
+		return notEqualRows;
 	}
 	
-	public void renamingD(){
+	public ArrayList<String> greater(String tableName, String column, String value){
+		ArrayList<String> greaterRows = new ArrayList<String>();
+		int numValue = Integer.parseInt(value);
+		for (int i = 0; i < tables.size(); i++) {
+			if (tables.get(i).getName().equals(tableName)) {
+				for (int j = 0; j < ((tables.get(i)).datas).size(); j++) {
+					if ((tables.get(i).datas.get(j).get(0)).equals(column)) {
+						for (int k = 2; k < (tables.get(i).datas.get(j)).size(); k++) {
+							if (Integer.parseInt(tables.get(i).datas.get(j).get(k)) > numValue) {
+								greaterRows.add(Integer.toString(k));
+								//System.out.print(k);
+							}
+						}
+					}
+				}
+			}
+		}
+		return greaterRows;
 	}
 	
-	public void unionD(){
+	public ArrayList<String> lesser(String tableName, String column, String value){
+		ArrayList<String> lesserRows = new ArrayList<String>();
+		int numValue = Integer.parseInt(value);
+		for (int i = 0; i < tables.size(); i++) {
+			if (tables.get(i).getName().equals(tableName)) {
+				for (int j = 0; j < ((tables.get(i)).datas).size(); j++) {
+					if ((tables.get(i).datas.get(j).get(0)).equals(column)) {
+						for (int k = 2; k < (tables.get(i).datas.get(j)).size(); k++) {
+							if (Integer.parseInt(tables.get(i).datas.get(j).get(k)) < numValue) {
+								lesserRows.add(Integer.toString(k));
+								//System.out.print(k);
+							}
+						}
+					}
+				}
+			}
+		}
+		return lesserRows;
 	}
+	
+	public ArrayList<String> lessEqual(String tableName, String column, String value){
+		ArrayList<String> lessEqRows = new ArrayList<String>();
+		int numValue = Integer.parseInt(value);
+		for (int i = 0; i < tables.size(); i++) {
+			if (tables.get(i).getName().equals(tableName)) {
+				for (int j = 0; j < ((tables.get(i)).datas).size(); j++) {
+					if ((tables.get(i).datas.get(j).get(0)).equals(column)) {
+						for (int k = 2; k < (tables.get(i).datas.get(j)).size(); k++) {
+							if (Integer.parseInt(tables.get(i).datas.get(j).get(k)) <= numValue) {
+								lessEqRows.add(Integer.toString(k));
+								//System.out.print(k);
+							}
+						}
+					}
+				}
+			}
+		}
+		return lessEqRows;
+	}
+	
+	public ArrayList<String> greatEqual(String tableName, String column, String value){
+		ArrayList<String> greatEqRows = new ArrayList<String>();
+		int numValue = Integer.parseInt(value);
+		for (int i = 0; i < tables.size(); i++) {
+			if (tables.get(i).getName().equals(tableName)) {
+				for (int j = 0; j < ((tables.get(i)).datas).size(); j++) {
+					if ((tables.get(i).datas.get(j).get(0)).equals(column)) {
+						for (int k = 2; k < (tables.get(i).datas.get(j)).size(); k++) {
+							if (Integer.parseInt(tables.get(i).datas.get(j).get(k)) >= numValue) {
+								greatEqRows.add(Integer.toString(k));
+								//System.out.print(k);
+							}
+						}
+					}
+				}
+			}
+		}
+		return greatEqRows;
+	}
+	
+	public ArrayList<String> and(ArrayList<String> arg1, ArrayList<String> arg2){
+		ArrayList<String> both = new ArrayList<String>();
+		for (int i = 0; i < arg1.size(); i++) {
+			for (int j = 0; j < arg2.size(); j++) {
+				if (arg1.get(i).equals(arg2.get(j))) {
+					both.add(arg1.get(i));
+				}
+			}
+		}
+		return both;
+	}
+	
+	public ArrayList<String> or(ArrayList<String> arg1, ArrayList<String> arg2){
+		ArrayList<String> atLeastOne = new ArrayList<String>();
+		int i = 0; //use to increment arg1
+		int j = 0; //use to increment arg2
+		int value1 = 0; //use to compare int value from arg1
+		int value2 = 0; //use to compare int value from arg2
+		while ((i < arg1.size())&&(j < arg2.size())) {
+			value1 = Integer.parseInt(arg1.get(i));
+			value2 = Integer.parseInt(arg2.get(j));
+			if (value1 < value2) { 
+				atLeastOne.add(arg1.get(i));
+				i++;
+			}
+			else if (value1 > value2) { 
+				atLeastOne.add(arg2.get(i));
+				j++;
+			}
+			else if (value1 == value2) { 
+				atLeastOne.add(arg1.get(i));
+				i++;
+				j++;
+			}
+		}
+		return atLeastOne;
+	}
+	
+	//public ArrayList<ArrayList<String>> selectionD(String tableName, String column, String value, String comparison){
+		
+	//}
+	
+	public ArrayList<String> projectionD(String tableName, String columnName){
+		ArrayList<String> projectedColumn = new ArrayList<String>();
+		projectedColumn.add("empty");
+		for (int i = 0; i < tables.size(); i++) {
+			if (tables.get(i).getName().equals(tableName)) {
+				ArrayList<ArrayList<String>> columns = (tables.get(i)).datas;
+				for (int j = 0; j < columns.size(); j++) {
+					ArrayList<String> column = columns.get(j);
+					if ((column).equals(columnName)){
+						projectedColumn = column;
+					}
+				}
+			}
+		}
+		return projectedColumn;
+	}
+	
+	public void renamingD(String tableName, String origName, String newName){
+		for (int i = 0; i < tables.size(); i++) {
+			if (tables.get(i).getName().equals(tableName)) {
+				for (int j = 0; j < ((tables.get(i)).datas).size(); j++) {
+					if ((tables.get(i).datas.get(j).get(0)).equals(origName)) {
+						tables.get(i).datas.get(j).set(0, newName);
+					}
+				}
+			}
+		}
+	}
+	
+/* 	public ArrayList<ArrayList<String>> unionD(String tableName1, String tableName2){
+		ArrayList<ArrayList<String>> union = new ArrayList<ArrayList<String>>();
+		ArrayList<ArrayList<String>> table1 = new ArrayList<ArrayList<String>>();
+		ArrayList<ArrayList<String>> table2 = new ArrayList<ArrayList<String>>();
+		for (int i = 0; i < tables.size(); i++) {
+			if (tables.get(i).getName().equals(table1Name
+		}
+	} */
 	
 	public void differencecD(){
 	}
 	
 	public void productD(){
 	}
-	
-	
-	
 	
 	public static void main(String[] args) {
 		//starts DatabaseEngine
@@ -128,6 +310,18 @@ public class DatabaseEngine{
 		engine.insertD(name,second);
 		
 		//call show on dogs
+		engine.showD(name);
+		
+		//show all equal to poodle
+		engine.notEqual(name,"kind","poodle");
+		
+		//call rename on kind
+		System.out.println();
+		System.out.println("Rename 'kind' to 'akind'...");
+		engine.renamingD(name, "kind", "akind");
+		
+		//call show on dogs to show kind change
+		System.out.println();
 		engine.showD(name);
 		
 		//deminstrating delete
