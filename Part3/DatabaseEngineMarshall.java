@@ -1,34 +1,59 @@
 import java.util.*;
+import java.io.File;
+import java.io.PrintWriter;
+import java.io.IOException;
 
 
-public class DatabaseEngine{
+public class DatabaseEngineMarshall{
 	public ArrayList<Table> tables;
 	
 	public PrintWriter openD(String file_name){			//Returns a File object that can be read from or written to
 		
-		File file = new File(file_name);
+		try{
 		
-		if(file.exists() == false) {
+			File file = new File(file_name);
 			
-			boolean success = file.createNewFile();
-			
-			if(success != true) {
+			if(file.exists() == false) {
 				
-				System.out.println("Error: Error creating new file");
-				return null;
+				boolean success = file.createNewFile();
 				
-			}
-			
-			else {
-				
-				if((file.canRead() && file.canWrite()) != true) {
+				if(success != true) {
 					
-					System.out.println("Error: Cannot read/write to file");
-					return null; 
+					System.out.println("Error: Error creating new file");
+					return null;
 					
 				}
 				
 				else {
+					
+					if((file.canRead() && file.canWrite()) != true) {
+						
+						System.out.println("Error: Cannot read/write to file");
+						return null; 
+						
+					}
+					
+					else {
+						
+						PrintWriter writer = new PrintWriter(file);
+						return writer; 
+						
+					}
+					
+				}
+				
+			}
+			
+			else{
+				
+				if((file.canRead() && file.canWrite()) != true) {
+						
+					System.out.println("Error: Cannot read/write to file");
+					return null; 
+						
+				}
+					
+				else {		//parse text file for tables, create new tables, populate tables with data, put new tables in Tables data struct???
 					
 					PrintWriter writer = new PrintWriter(file);
 					return writer; 
@@ -36,24 +61,13 @@ public class DatabaseEngine{
 				}
 				
 			}
-			
+		
 		}
 		
-		else{
+		catch(IOException success) {
 			
-			if((file.canRead() && file.canWrite()) != true) {
-					
-				System.out.println("Error: Cannot read/write to file");
-				return null; 
-					
-			}
-				
-			else {		//parse text file for tables, create new tables, populate tables with data, put new tables in Tables data struct???
-				
-				PrintWriter writer = new PrintWriter(file);
-				return writer; 
-				
-			}
+			System.err.println("Error: " + success.getMessage());
+			return null;
 			
 		}
 		
@@ -61,19 +75,13 @@ public class DatabaseEngine{
 	
 	public boolean closeD(PrintWriter writer){		//not sure what this is really suppose to do right now but whateva
 
-		if((writer.close()) != true) {
+		for(int i = 0; i <tables.size(); i++) {
 			
-			System.out.println("Error: Error closing file");
-			return false; 
+			writeD(writer, tables.get(i));
 			
-		}
-		
-		else {
+		} 	
 			
-			//delete writer;
-			return true;
-			
-		}
+			return true; 
 	
 	}
 	
@@ -98,7 +106,7 @@ public class DatabaseEngine{
 	
 	public void exitD(){		//system call to exit JVM, ezpz
 	
-		System.exit();
+		System.exit(0);
 		return;
 	
 	}
