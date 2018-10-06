@@ -53,7 +53,7 @@ public class Table{
 		}
 	}
 	
-	public Boolean isUnique(ArrayList<String> ele){
+	public Boolean isUnique(ArrayList<String> ele){  //check the primary keys for each row and make sure there are no duplicates
 		for(int j = 0; j<datas.get(0).size();j++){
 			Boolean notSame = true;
 			for(int k = 0; k<pKey.size();k++){
@@ -68,7 +68,7 @@ public class Table{
 		return true;
 	}
 
-	public void tablePrint(){
+	public void tablePrint(){	//print a table to the command line
 		System.out.println(title);
 		for(int i = 0; i<datas.get(0).size(); i++){
 			for(int j = 0; j < datas.size(); j++){
@@ -94,7 +94,7 @@ public class Table{
 	}
 	
 	public void changeElement(int index,ArrayList<ArrayList<String>> newAttribute){
-		for(int i = 0; i<newAttribute.size(); i++){
+		for(int i = 0; i<newAttribute.size(); i++){	//update the values of a row
 			for(int k = 0; k<datas.size(); k++){
 				if(datas.get(k).get(0).equals(newAttribute.get(i).get(0)) && index < datas.get(k).size()){
 					datas.get(k).set(index,newAttribute.get(i).get(1));
@@ -137,42 +137,5 @@ public class Table{
 		catch(IOException ioe){
 			System.out.println("Error: Something went wrong");
 		}
-	}
-	
-		
-	
-	public static void main(String[] args) {
-		String name = "dogs";
-		ArrayList<ArrayList<String>> v = new ArrayList<ArrayList<String>>();
-		ArrayList<String> d1 = new ArrayList<String>();
-		d1.add("name");
-		d1.add(String.valueOf(18));
-		ArrayList<String> d2 = new ArrayList<String>();
-		d2.add("kind");
-		d2.add(String.valueOf(10));
-		ArrayList<String> d3 = new ArrayList<String>();
-		d3.add("year");
-		d3.add(String.valueOf(-1));
-		v.add(d1);
-		v.add(d2);
-		v.add(d3);
-		ArrayList<String> key = new ArrayList<String>();
-		key.add("name");
-		key.add("kind");
-		Table test = new Table(name,v,key);
-		ArrayList<String> first = new ArrayList<String>();
-		first.add("fido");
-		first.add("poodle");
-		first.add(String.valueOf(12));
-		test.addElement(first);
-		ArrayList<String> second = new ArrayList<String>();
-		second.add("Rex");
-		second.add("German Sheperd");
-		second.add(String.valueOf(4));
-		test.addElement(second);
-		test.addElement(second);
-		//test.deleteElement(3);
-		test.tablePrint();
-		
 	}
 }
