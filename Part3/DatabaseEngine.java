@@ -494,7 +494,7 @@ public class DatabaseEngine{
 		}
 	}
 	
-  	public static ArrayList<ArrayList<String>> unionD(String table1Name, String table2Name){
+	public static ArrayList<ArrayList<String>> unionD(String table1Name, String table2Name){
 		//this will be the output
 		ArrayList<ArrayList<String>> union = new ArrayList<ArrayList<String>>();
 		//these will hold the data from the input tables
@@ -503,10 +503,10 @@ public class DatabaseEngine{
 		//find the input tables in the database list
 		for (int i = 0; i < tables.size(); i++) {
 			if (tables.get(i).getName().equals(table1Name)) {
-				columns1 = tables.get(i).datas;
+				columns1 = new ArrayList<ArrayList<String>>(tables.get(i).datas);
 			}
 			if (tables.get(i).getName().equals(table2Name)) {
-				columns2 = tables.get(i).datas;
+				columns2 = new ArrayList<ArrayList<String>>(tables.get(i).datas);
 			}
 		}
 		//check if the tables are union compatable
@@ -520,70 +520,69 @@ public class DatabaseEngine{
 			int type2 = 0;
 			//a max char value of -1 indicates the type is integer
 			for (int j = 0; j < columns1.size(); j++) {
-				type1 = Integer.parseInt(columns1.get(j).get(1));
-				type2 = Integer.parseInt(columns2.get(j).get(1));
+				type1 = Integer.valueOf(new String(columns1.get(j).get(1)));
+				type2 = Integer.valueOf(columns2.get(j).get(1));
 				if (type1 > 0) { type1 = 1; }
-				else if (type1 < 0) { type2 = 0; }
-				if (type2 > 0) { type1 = 1; }
-				else if (type2 < 0) { type2 = 0; }
+				else if (type1 < 0) { type1 = -1; }
+				if (type2 > 0) { type2 = 1; }
+				else if (type2 < 0) { type2 = -1; }
 				//if the types were not equal, don't continue
 				if (type1 != type2) {
 					System.out.println("Unable to perform union - incompatible types.");
 				}
 				else {	//continue if the types are equal
-					for (int k = 0; k < columns1.size(); k++) {
 						//create new columns holding the name from the first table and the greatest char max
-						ArrayList<String> newColumn = new ArrayList<String>();
-						int largestChar = 0;
-						if (type1 != -1) {	//if they aren't integers
-							//find the largest max char value
-							if (Integer.parseInt(columns1.get(k).get(1)) >= Integer.parseInt(columns2.get(k).get(1))) {
-								largestChar = Integer.parseInt(columns1.get(k).get(1));
-							}
-							else { largestChar = Integer.parseInt(columns2.get(k).get(1)); }
+					ArrayList<String> newColumn = new ArrayList<String>();
+					int largestChar = 0;
+					if (type1 != -1) {	//if they aren't integers
+						//find the largest max char value
+						if (Integer.parseInt(columns1.get(j).get(1)) >= Integer.parseInt(columns2.get(j).get(1))) {
+							largestChar = Integer.parseInt(new String(columns1.get(j).get(1)));
 						}
-						//keep the type as integer
-						else { largestChar = -1; }
-						//use the name from the first table and largest char max
-						newColumn.add(columns1.get(k).get(0));
-						newColumn.add(String.valueOf(largestChar));
-						union.add(newColumn);
+						else { 
+							largestChar = Integer.parseInt(columns2.get(j).get(1)); 
+						}
 					}
+					//keep the type as integer
+					else { 
+						largestChar = -1; 
+					}
+						//use the name from the first table and largest char max
+					newColumn.add(new String(columns1.get(j).get(0)));
+					newColumn.add(String.valueOf(largestChar));
+					union.add(newColumn);
 					//check if there are equal rows to avoid duplicates
 					int colCount = 0;
 					for (int n = 2; n < columns1.get(colCount).size(); n++) {	//for each row in table1
-						for (int m = 0; m < union.size(); m++) {	//add row to union
-							union.get(m).add(columns1.get(m).get(n));
-						}
-						for (int o = 0; o < columns2.get(colCount).size(); o++) {	//for each row in table2
-							if (columns1.get(colCount).get(n).equals(columns2.get(colCount).get(o))) {	//see if the first column is equal
-								int eq = 1;
-								colCount++;
-								while (colCount < columns1.size()) {
-									if (!columns1.get(colCount).get(n).equals(columns2.get(colCount).get(o))) {
-										eq = 0;
-									}
-								}
-								if (eq == 0) {	//if the rows aren't equal
-									for (int m = 0; m < union.size(); m++) {	//add row2 to union
-										union.get(m).add(columns2.get(m).get(o));
-									} 
-								}
-							}
-							else {
-								for (int m = 0; m < union.size(); m++) {	//add row2 to union
-									union.get(m).add(columns2.get(m).get(o));
-								} 
-							}
+						union.get(j).add(new String(columns1.get(j).get(n)));
+					}
+				}
+			}		
+			for(int t = 2; t<columns2.get(0).size(); t++){	//column2 row
+				boolean completeUniqe = true;
+				 for(int p = 2; p < union.get(0).size(); p++){// rows of union
+					boolean uniqe = false;
+					for(int u = 0; u<union.size(); u++){//columns of union
+						if(columns2.get(u).get(t) != union.get(u).get(p) && !uniqe){
+							uniqe = true;
 						}
 					}
+					if(!uniqe){
+						completeUniqe = false;
+					}
+				}
+				if(completeUniqe){
+					for(int u = 0; u<union.size(); u++){//columns of union
+						union.get(u).add(new String(columns2.get(u).get(t)));
+					}
+
 				}
 			}
 		}
 		return union;
 	} 
 	
-  	public static ArrayList<ArrayList<String>> differenceD(String table1Name, String table2Name){
+ 	public static ArrayList<ArrayList<String>> differenceD(String table1Name, String table2Name){
 		//this will be the output
 		ArrayList<ArrayList<String>> difference = new ArrayList<ArrayList<String>>();
 		//these will hold the data from the input tables
@@ -592,13 +591,13 @@ public class DatabaseEngine{
 		//find the input tables in the database list
 		for (int i = 0; i < tables.size(); i++) {
 			if (tables.get(i).getName().equals(table1Name)) {
-				columns1 = tables.get(i).datas;
+				columns1 = new ArrayList<ArrayList<String>>(tables.get(i).datas);
 			}
 			if (tables.get(i).getName().equals(table2Name)) {
-				columns2 = tables.get(i).datas;
+				columns2 = new ArrayList<ArrayList<String>>(tables.get(i).datas);
 			}
 		}
-		//check if the tables are union compatable
+		//check if the tables are difference compatable
 		if (columns1.size() != columns2.size()) {
 			System.out.println("Unable to perform difference - unnequal number of columns.");
 		}
@@ -609,57 +608,76 @@ public class DatabaseEngine{
 			int type2 = 0;
 			//a max char value of -1 indicates the type is integer
 			for (int j = 0; j < columns1.size(); j++) {
-				type1 = Integer.parseInt(columns1.get(j).get(1));
-				type2 = Integer.parseInt(columns2.get(j).get(1));
+				type1 = Integer.parseInt(new String(columns1.get(j).get(1)));
+				type2 = Integer.parseInt(new String(columns2.get(j).get(1)));
 				if (type1 > 0) { type1 = 1; }
-				else if (type1 < 0) { type2 = 0; }
-				if (type2 > 0) { type1 = 1; }
-				else if (type2 < 0) { type2 = 0; }
+				else if (type1 < 0) { type1 = -1; }
+				if (type2 > 0) { type2 = 1; }
+				else if (type2 < 0) { type2 = -1; }
 				//if the types were not equal, don't continue
 				if (type1 != type2) {
 					System.out.println("Unable to perform difference - incompatible types.");
 				}
 				else {	//continue if the types are equal
-					for (int k = 0; k < columns1.size(); k++) {
-						//create new columns holding the name from the first table and the greatest char max
-						ArrayList<String> newColumn = new ArrayList<String>();
-						int largestChar = 0;
-						if (type1 != -1) {	//if they aren't integers
-							//find the largest max char value
-							if (Integer.parseInt(columns1.get(k).get(1)) >= Integer.parseInt(columns2.get(k).get(1))) {
-								largestChar = Integer.parseInt(columns1.get(k).get(1));
-							}
-							else { largestChar = Integer.parseInt(columns2.get(k).get(1)); }
+					ArrayList<String> newColumn = new ArrayList<String>();
+					int largestChar = 0;
+					if (type1 != -1) {	//if they aren't integers
+						//find the largest max char value
+						if (Integer.parseInt(columns1.get(j).get(1)) >= Integer.parseInt(columns2.get(j).get(1))) {
+							largestChar = Integer.parseInt(new String(columns1.get(j).get(1)));
 						}
-						//keep the type as integer
-						else { largestChar = -1; }
-						//use the name from the first table and largest char max
-						newColumn.add(columns1.get(k).get(0));
-						newColumn.add(String.valueOf(largestChar));
-						difference.add(newColumn);
+						else { 
+							largestChar = Integer.parseInt(columns2.get(j).get(1)); 
+						}
 					}
-					//check if there are equal rows to remove
-					int colCount = 0;
-					for (int n = 2; n < columns1.get(colCount).size(); n++) {	//for each row in table1
-						for (int o = 0; o < columns2.get(colCount).size(); o++) {	//for each row in table2
-							if (columns1.get(colCount).get(n).equals(columns2.get(colCount).get(o))) {	//see if the first column is equal
-								int eq = 1;
-								colCount++;
-								while (colCount < columns1.size()) {
-									if (!columns1.get(colCount).get(n).equals(columns2.get(colCount).get(o))) {
-										eq = 0;
-									}
-								}
-								if (eq == 0) {	//if the rows aren't equal
-									for (int m = 0; m < difference.size(); m++) {	//add row1 to difference
-										difference.get(m).add(columns1.get(m).get(n));
-									} 
-								}
+					//keep the type as integer
+					else { 
+						largestChar = -1; 
+					}
+						//use the name from the first table and largest char max
+					newColumn.add(new String(columns1.get(j).get(0)));
+					newColumn.add(String.valueOf(largestChar));
+					difference.add(newColumn);
+				}
+			}
+				for(int t = 2; t<columns2.get(0).size(); t++){//column2 row
+					boolean completeUniqe = true;
+					for(int p = 2; p < columns1.get(0).size(); p++){// rows of difference
+						boolean uniqe = false;
+						for(int u = 0; u<columns1.size(); u++){//columns of difference
+							if(!columns2.get(u).get(t).equals(columns1.get(u).get(p)) && !uniqe){
+								uniqe = true;
 							}
+						}
+						if(!uniqe){
+							completeUniqe = false;
+						}
+					}
+					if(completeUniqe){
+						for(int u = 0; u<difference.size(); u++){//columns of difference
+							difference.get(u).add(new String(columns2.get(u).get(t)));
 						}
 					}
 				}
-			}
+				for(int t = 2; t<columns1.get(0).size(); t++){//column2 row
+					boolean completeUniqe = true;
+					for(int p = 2; p < columns2.get(0).size(); p++){// rows of difference
+						boolean uniqe = false;
+						for(int u = 0; u<columns2.size(); u++){//columns of difference
+							if(!columns1.get(u).get(t).equals(columns2.get(u).get(p)) && !uniqe){
+								uniqe = true;
+							}
+						}
+						if(!uniqe){
+							completeUniqe = false;
+						}
+					}
+					if(completeUniqe){
+						for(int u = 0; u<difference.size(); u++){//columns of difference
+							difference.get(u).add(new String(columns1.get(u).get(t)));
+						}
+					}
+				}
 		}
 		return difference;
 	}
