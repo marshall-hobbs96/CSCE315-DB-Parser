@@ -1,10 +1,13 @@
 import java.util.*;
+import java.io.*;
 
 
 public class Table{
 	public String title;
 	public ArrayList<ArrayList<String>> datas;
 	public ArrayList<Integer> pKey;
+	public boolean isopen;
+	private String outString;
 	
 	//d needs to be a vector of vectors, [0] is name of vector,
 	//[1] is the char limit, null when int
@@ -15,12 +18,16 @@ public class Table{
 		for(int i = 0; i < Key.size();i++){
 			for(int j = 0;j < datas.size();j++){
 				if(Key.get(i) == datas.get(j).get(0)){
-					p.add(1);
+					p.add(j);
 				}
 			}
 		}
 		pKey = p;
+		isopen = false;
+
 	}
+	
+	
 	public String getName(){
 		return title;
 	}
@@ -76,7 +83,9 @@ public class Table{
 	public void deleteElement(int index){
 		if(index<datas.get(0).size() && index>1){
 			for(int i = 0; i<datas.size();i++){
-				datas.get(i).remove(index);
+				if(index<datas.get(i).size()){
+					datas.get(i).remove(index);
+				}
 			}
 		}
 		else{
@@ -84,20 +93,53 @@ public class Table{
 		}
 	}
 	
-	public ArrayList<Integer> searchColumn(String colHead, String searchFor){
-		ArrayList<Integer> indexes = new ArrayList<Integer>();
-		for(int i = 0; i<datas.size();i++){
-			if(datas.get(i).get(0).equals(colHead)){
-				for(int j = 2; j<datas.get(i).size();j++){
-					if(datas.get(i).get(j).equals(searchFor)){
-						indexes.add(j);
-					}
+	public void changeElement(int index,ArrayList<ArrayList<String>> newAttribute){
+		for(int i = 0; i<newAttribute.size(); i++){
+			for(int k = 0; k<datas.size(); k++){
+				if(datas.get(k).get(0).equals(newAttribute.get(i).get(0)) && index < datas.get(k).size();){
+					datas.get(k).set(index,newAttribute.get(i).get(1));
 				}
-				return indexes;
 			}
 		}
-		return indexes;
+		return;
 	}
+	
+	
+	public void printToFile(){
+		String fileName = title + ".db";
+		try{
+			File file = new File(fileName);
+			if(file.exists() == false) {	//checks if file is exist and makes it if it isn't
+				boolean success = file.createNewFile();	
+			}	
+			if((file.canRead() && file.canWrite()) != true) {	
+				System.out.println("Error: Cannot read/write to file");
+				return; 
+			}
+			else {		//parse text file for tables, create new tables, populate tables with data, put new tables in Tables data struct???	
+				PrintWriter writer = new PrintWriter(file);
+				writer.write('"' + title + '"' +'\t');
+				for(int i = 0; i<pKey.size();i++){
+					writer.write('"'+String.valueOf(pKey.get(i))+'"' +'\t');
+				}
+				writer.write('\n');
+				for(int i = 0; i<datas.get(0).size(); i++){
+					for(int j = 0; j < datas.size(); j++){
+							writer.printf("%-15s",'"' + datas.get(j).get(i)+'"');
+						
+					}
+					writer.write("\n");
+				}
+				writer.close();
+			}
+				
+		}
+		catch(IOException ioe){
+			System.out.println("Error: Something went wrong");
+		}
+	}
+	
+		
 	
 	public static void main(String[] args) {
 		String name = "dogs";
