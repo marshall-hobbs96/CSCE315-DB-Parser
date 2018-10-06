@@ -4,7 +4,7 @@ import java.io.*;
 
 
 public class DatabaseEngine{
-	public ArrayList<Table> tables;
+	public static ArrayList<Table> tables;
 	
 	public DatabaseEngine(){
 		ArrayList<Table> name = new ArrayList<Table>();
@@ -175,32 +175,466 @@ public class DatabaseEngine{
 			}
 		}
 	}
-	
-	public void selectionD(){
+
+	public ArrayList<String> equal(String tableName, String column, String value){
+		ArrayList<String> equalRows = new ArrayList<String>();
+		ArrayList<ArrayList<String>> columns = new ArrayList<ArrayList<String>>();
+		int twoColumns = 0;
+		for (int i = 0; i < tables.size(); i++) {
+			if (tables.get(i).getName().equals(tableName)) {
+				columns = tables.get(i).datas;
+			}
+		}
+		for (int j = 0; j < columns.size(); j++) {
+			ArrayList<String> column1 = new ArrayList<String>();
+			ArrayList<String> column2 = new ArrayList<String>();
+			if (value.equals(columns.get(j).get(0))) {
+				column2 = columns.get(j);
+				twoColumns = 1;
+			}
+			if (column.equals(columns.get(j).get(0))) {
+				column1 = columns.get(j);
+			}
+			if (twoColumns == 1) {
+				for (int k = 2; k < column1.size(); k++) {
+					if (column1.get(k).equals(column2.get(k))) {
+						equalRows.add(String.valueOf(k));
+					}
+				}
+			}
+			else {
+				for (int k = 2; k < column1.size(); k++) {
+					if (column1.get(k).equals(value)) {
+						equalRows.add(String.valueOf(k));
+					}
+				}
+			}
+		}
+		return equalRows;
 	}
 	
-	public void projectionD(){
+	public ArrayList<String> notequal(String tableName, String column, String value){
+		ArrayList<String> notEqualRows = new ArrayList<String>();
+		ArrayList<ArrayList<String>> columns = new ArrayList<ArrayList<String>>();
+		int twoColumns = 0;
+		for (int i = 0; i < tables.size(); i++) {
+			if (tables.get(i).getName().equals(tableName)) {
+				columns = tables.get(i).datas;
+			}
+		}
+		for (int j = 0; j < columns.size(); j++) {
+			ArrayList<String> column1 = new ArrayList<String>();
+			ArrayList<String> column2 = new ArrayList<String>();
+			if (value.equals(columns.get(j).get(0))) {
+				column2 = columns.get(j);
+				twoColumns = 1;
+			}
+			if (column.equals(columns.get(j).get(0))) {
+				column1 = columns.get(j);
+			}
+			if (twoColumns == 1) {
+				for (int k = 2; k < column1.size(); k++) {
+					if (!column1.get(k).equals(column2.get(k))) {
+						notEqualRows.add(String.valueOf(k));
+					}
+				}
+			}
+			else {
+				for (int k = 2; k < column1.size(); k++) {
+					if (!column1.get(k).equals(value)) {
+						notEqualRows.add(String.valueOf(k));
+					}
+				}
+			}
+		}
+		return notEqualRows;
 	}
 	
-	public void renamingD(){
+	public ArrayList<String> greater(String tableName, String column, String value){
+		ArrayList<String> greaterRows = new ArrayList<String>();
+		int numValue = Integer.parseInt(value);
+		for (int i = 0; i < tables.size(); i++) {
+			if (tables.get(i).getName().equals(tableName)) {
+				for (int j = 0; j < ((tables.get(i)).datas).size(); j++) {
+					if ((tables.get(i).datas.get(j).get(0)).equals(column)) {
+						for (int k = 2; k < (tables.get(i).datas.get(j)).size(); k++) {
+							if (Integer.parseInt(tables.get(i).datas.get(j).get(k)) > numValue) {
+								greaterRows.add(Integer.toString(k));
+								//System.out.print(k);
+							}
+						}
+					}
+				}
+			}
+		}
+		return greaterRows;
 	}
 	
-	public void unionD(){
+	public ArrayList<String> lesser(String tableName, String column, String value){
+		ArrayList<String> lesserRows = new ArrayList<String>();
+		int numValue = Integer.parseInt(value);
+		for (int i = 0; i < tables.size(); i++) {
+			if (tables.get(i).getName().equals(tableName)) {
+				for (int j = 0; j < ((tables.get(i)).datas).size(); j++) {
+					if ((tables.get(i).datas.get(j).get(0)).equals(column)) {
+						for (int k = 2; k < (tables.get(i).datas.get(j)).size(); k++) {
+							if (Integer.parseInt(tables.get(i).datas.get(j).get(k)) < numValue) {
+								lesserRows.add(Integer.toString(k));
+								//System.out.print(k);
+							}
+						}
+					}
+				}
+			}
+		}
+		return lesserRows;
 	}
 	
-	public void differencecD(){
+	public ArrayList<String> lessEqual(String tableName, String column, String value){
+		ArrayList<String> lessEqRows = new ArrayList<String>();
+		int numValue = Integer.parseInt(value);
+		for (int i = 0; i < tables.size(); i++) {
+			if (tables.get(i).getName().equals(tableName)) {
+				for (int j = 0; j < ((tables.get(i)).datas).size(); j++) {
+					if ((tables.get(i).datas.get(j).get(0)).equals(column)) {
+						for (int k = 2; k < (tables.get(i).datas.get(j)).size(); k++) {
+							if (Integer.parseInt(tables.get(i).datas.get(j).get(k)) <= numValue) {
+								lessEqRows.add(Integer.toString(k));
+								//System.out.print(k);
+							}
+						}
+					}
+				}
+			}
+		}
+		return lessEqRows;
 	}
 	
-	public void productD(){
+	public ArrayList<String> greatEqual(String tableName, String column, String value){
+		ArrayList<String> greatEqRows = new ArrayList<String>();
+		int numValue = Integer.parseInt(value);
+		for (int i = 0; i < tables.size(); i++) {
+			if (tables.get(i).getName().equals(tableName)) {
+				for (int j = 0; j < ((tables.get(i)).datas).size(); j++) {
+					if ((tables.get(i).datas.get(j).get(0)).equals(column)) {
+						for (int k = 2; k < (tables.get(i).datas.get(j)).size(); k++) {
+							if (Integer.parseInt(tables.get(i).datas.get(j).get(k)) >= numValue) {
+								greatEqRows.add(Integer.toString(k));
+								//System.out.print(k);
+							}
+						}
+					}
+				}
+			}
+		}
+		return greatEqRows;
 	}
 	
+	public ArrayList<String> and(ArrayList<String> arg1, ArrayList<String> arg2){
+		ArrayList<String> both = new ArrayList<String>();
+		for (int i = 0; i < arg1.size(); i++) {
+			for (int j = 0; j < arg2.size(); j++) {
+				if (arg1.get(i).equals(arg2.get(j))) {
+					both.add(arg1.get(i));
+				}
+			}
+		}
+		return both;
+	}
 	
+	public ArrayList<String> or(ArrayList<String> arg1, ArrayList<String> arg2){
+		ArrayList<String> atLeastOne = new ArrayList<String>();
+		int i = 0; //use to increment arg1
+		int j = 0; //use to increment arg2
+		int value1 = 0; //use to compare int value from arg1
+		int value2 = 0; //use to compare int value from arg2
+		while ((i < arg1.size())&&(j < arg2.size())) {
+			value1 = Integer.parseInt(arg1.get(i));
+			value2 = Integer.parseInt(arg2.get(j));
+			if (value1 < value2) { 
+				atLeastOne.add(arg1.get(i));
+				i++;
+			}
+			else if (value1 > value2) { 
+				atLeastOne.add(arg2.get(i));
+				j++;
+			}
+			else if (value1 == value2) { 
+				atLeastOne.add(arg1.get(i));
+				i++;
+				j++;
+			}
+		}
+		return atLeastOne;
+	}
 	
+	public ArrayList<ArrayList<String>> selectionD(String tableName, ArrayList<String> rows){
+		ArrayList<Integer> rowNums = new ArrayList<Integer>();
+		ArrayList<ArrayList<String>> columns = new ArrayList<ArrayList<String>>();
+		ArrayList<ArrayList<String>> selectedRows = new ArrayList<ArrayList<String>>();
+		for (int i = 0; i < rows.size(); i++) {
+			rowNums.add(Integer.parseInt(rows.get(i)));
+		}
+		for (int j = 0; j < tables.size(); j++) {
+			if (tableName.equals(tables.get(j).getName())) {
+				columns = tables.get(j).datas;
+			}
+		}
+		int numColumns = columns.size();
+		for (int k = 0; k < numColumns; k++) {
+			ArrayList<String> newColumn = new ArrayList<String>();
+			ArrayList<String> tempColumn = new ArrayList<String>();
+			tempColumn = columns.get(k);
+			newColumn.add(tempColumn.get(0));
+			newColumn.add(tempColumn.get(1));
+			for (int m = 0; m < rows.size(); m++) {
+				newColumn.add(tempColumn.get(rowNums.get(m)));
+			}
+			selectedRows.add(newColumn);
+		}
+		return selectedRows;
+	}
+	
+	public static ArrayList<ArrayList<String>> projectionD(String tableName, ArrayList<String> columns){
+		ArrayList<ArrayList<String>> projectedColumn = new ArrayList<ArrayList<String>>();
+		String columnName;
+		for (int i = 0; i < tables.size(); i++) {
+			if (tableName.equals(tables.get(i).getName())) {
+				for (int j = 0; j < columns.size(); j++) {
+					columnName = columns.get(j);
+					for (int k = 0; k < tables.get(i).datas.size(); k++) {
+						if (columnName.equals(tables.get(i).datas.get(k).get(0))) {
+							projectedColumn.add(tables.get(i).datas.get(k));
+						}
+					}
+				}
+			}
+		}
+		return projectedColumn;
+	}
+	
+	public void renamingD(String tableName, String origName, String newName){
+		for (int i = 0; i < tables.size(); i++) {
+			if (tables.get(i).getName().equals(tableName)) {
+				for (int j = 0; j < ((tables.get(i)).datas).size(); j++) {
+					if ((tables.get(i).datas.get(j).get(0)).equals(origName)) {
+						tables.get(i).datas.get(j).set(0, newName);
+					}
+				}
+			}
+		}
+	}
+	
+ 	public ArrayList<ArrayList<String>> unionD(String table1Name, String table2Name){
+		//this will be the output
+		ArrayList<ArrayList<String>> union = new ArrayList<ArrayList<String>>();
+		//these will hold the data from the input tables
+		ArrayList<ArrayList<String>> columns1 = new ArrayList<ArrayList<String>>();
+		ArrayList<ArrayList<String>> columns2 = new ArrayList<ArrayList<String>>();
+		//find the input tables in the database list
+		for (int i = 0; i < tables.size(); i++) {
+			if (tables.get(i).getName().equals(table1Name)) {
+				columns1 = tables.get(i).datas;
+			}
+			if (tables.get(i).getName().equals(table2Name)) {
+				columns2 = tables.get(i).datas;
+			}
+		}
+		//check if the tables are union compatable
+		if (columns1.size() != columns2.size()) {
+			System.out.println("Unable to perform union - unnequal number of columns.");
+		}
+		else {	//only continue if they are union compatable
+			//true if all columns have the same type
+			int sameTypes = 1;
+			int type1 = 0;
+			int type2 = 0;
+			//a max char value of -1 indicates the type is integer
+			for (int j = 0; j < columns1.size(); j++) {
+				type1 = Integer.parseInt(columns1.get(j).get(1));
+				type2 = Integer.parseInt(columns2.get(j).get(1));
+				if (type1 > 0) { type1 = 1; }
+				else if (type1 < 0) { type2 = 0; }
+				if (type2 > 0) { type1 = 1; }
+				else if (type2 < 0) { type2 = 0; }
+				//if the types were not equal, don't continue
+				if (type1 != type2) {
+					System.out.println("Unable to perform union - incompatible types.");
+				}
+				else {	//continue if the types are equal
+					for (int k = 0; k < columns1.size(); k++) {
+						//create new columns holding the name from the first table and the greatest char max
+						ArrayList<String> newColumn = new ArrayList<String>();
+						int largestChar = 0;
+						if (type1 != -1) {	//if they aren't integers
+							//find the largest max char value
+							if (Integer.parseInt(columns1.get(k).get(1)) >= Integer.parseInt(columns2.get(k).get(1))) {
+								largestChar = Integer.parseInt(columns1.get(k).get(1));
+							}
+							else { largestChar = Integer.parseInt(columns2.get(k).get(1)); }
+						}
+						//keep the type as integer
+						else { largestChar = -1; }
+						//use the name from the first table and largest char max
+						newColumn.add(columns1.get(k).get(0));
+						newColumn.add(String.valueOf(largestChar));
+						union.add(newColumn);
+					}
+					//check if there are equal rows to avoid duplicates
+					int colCount = 0;
+					for (int n = 2; n < columns1.get(colCount).size(); n++) {	//for each row in table1
+						for (int m = 0; m < union.size(); m++) {	//add row to union
+							union.get(m).add(columns1.get(m).get(n));
+						}
+						for (int o = 0; o < columns2.get(colCount).size(); o++) {	//for each row in table2
+							if (columns1.get(colCount).get(n).equals(columns2.get(colCount).get(o))) {	//see if the first column is equal
+								int eq = 1;
+								colCount++;
+								while (colCount < columns1.size()) {
+									if (!columns1.get(colCount).get(n).equals(columns2.get(colCount).get(o))) {
+										eq = 0;
+									}
+								}
+								if (eq == 0) {	//if the rows aren't equal
+									for (int m = 0; m < union.size(); m++) {	//add row2 to union
+										union.get(m).add(columns2.get(m).get(o));
+									} 
+								}
+							}
+							else {
+								for (int m = 0; m < union.size(); m++) {	//add row2 to union
+									union.get(m).add(columns2.get(m).get(o));
+								} 
+							}
+						}
+					}
+				}
+			}
+		}
+		return union;
+	} 
+	
+ 	public ArrayList<ArrayList<String>> differenceD(String table1Name, String table2Name){
+		//this will be the output
+		ArrayList<ArrayList<String>> difference = new ArrayList<ArrayList<String>>();
+		//these will hold the data from the input tables
+		ArrayList<ArrayList<String>> columns1 = new ArrayList<ArrayList<String>>();
+		ArrayList<ArrayList<String>> columns2 = new ArrayList<ArrayList<String>>();
+		//find the input tables in the database list
+		for (int i = 0; i < tables.size(); i++) {
+			if (tables.get(i).getName().equals(table1Name)) {
+				columns1 = tables.get(i).datas;
+			}
+			if (tables.get(i).getName().equals(table2Name)) {
+				columns2 = tables.get(i).datas;
+			}
+		}
+		//check if the tables are union compatable
+		if (columns1.size() != columns2.size()) {
+			System.out.println("Unable to perform difference - unnequal number of columns.");
+		}
+		else {	//only continue if they are union compatable
+			//true if all columns have the same type
+			int sameTypes = 1;
+			int type1 = 0;
+			int type2 = 0;
+			//a max char value of -1 indicates the type is integer
+			for (int j = 0; j < columns1.size(); j++) {
+				type1 = Integer.parseInt(columns1.get(j).get(1));
+				type2 = Integer.parseInt(columns2.get(j).get(1));
+				if (type1 > 0) { type1 = 1; }
+				else if (type1 < 0) { type2 = 0; }
+				if (type2 > 0) { type1 = 1; }
+				else if (type2 < 0) { type2 = 0; }
+				//if the types were not equal, don't continue
+				if (type1 != type2) {
+					System.out.println("Unable to perform difference - incompatible types.");
+				}
+				else {	//continue if the types are equal
+					for (int k = 0; k < columns1.size(); k++) {
+						//create new columns holding the name from the first table and the greatest char max
+						ArrayList<String> newColumn = new ArrayList<String>();
+						int largestChar = 0;
+						if (type1 != -1) {	//if they aren't integers
+							//find the largest max char value
+							if (Integer.parseInt(columns1.get(k).get(1)) >= Integer.parseInt(columns2.get(k).get(1))) {
+								largestChar = Integer.parseInt(columns1.get(k).get(1));
+							}
+							else { largestChar = Integer.parseInt(columns2.get(k).get(1)); }
+						}
+						//keep the type as integer
+						else { largestChar = -1; }
+						//use the name from the first table and largest char max
+						newColumn.add(columns1.get(k).get(0));
+						newColumn.add(String.valueOf(largestChar));
+						difference.add(newColumn);
+					}
+					//check if there are equal rows to remove
+					int colCount = 0;
+					for (int n = 2; n < columns1.get(colCount).size(); n++) {	//for each row in table1
+						for (int o = 0; o < columns2.get(colCount).size(); o++) {	//for each row in table2
+							if (columns1.get(colCount).get(n).equals(columns2.get(colCount).get(o))) {	//see if the first column is equal
+								int eq = 1;
+								colCount++;
+								while (colCount < columns1.size()) {
+									if (!columns1.get(colCount).get(n).equals(columns2.get(colCount).get(o))) {
+										eq = 0;
+									}
+								}
+								if (eq == 0) {	//if the rows aren't equal
+									for (int m = 0; m < difference.size(); m++) {	//add row1 to difference
+										difference.get(m).add(columns1.get(m).get(n));
+									} 
+								}
+							}
+						}
+					}
+				}
+			}
+		}
+		return difference;
+	}
+	
+	public static ArrayList<ArrayList<String>> productD(String tableName1,String tableName2 ){
+		ArrayList<ArrayList<String>> product = new ArrayList<ArrayList<String>>();  //use for output
+		ArrayList<ArrayList<String>> columns1 = new ArrayList<ArrayList<String>>();  //use to hold table1 data
+		ArrayList<ArrayList<String>> columns2 = new ArrayList<ArrayList<String>>();  //use to hold table2 data
+		for (int i = 0; i < tables.size(); i++) {  //assign data to lists
+			if (tableName1.equals(tables.get(i).getName())) {
+				columns1 = tables.get(i).datas;
+			}
+			if (tableName2.equals(tables.get(i).getName())) {
+				columns2 = tables.get(i).datas;
+			}
+		}
+		for (int j = 0; j < columns1.size(); j++) {  //add columns from the tables to product
+			product.add(columns1.get(j));
+		}
+		for (int k = 0; k < columns2.size(); k++) {
+			product.add(columns2.get(k));
+		}
+		for (int m = 0; m < columns1.get(0).size(); m++) {	//for each row in table1
+			for (int n = 0; n < columns2.get(0).size(); n++) {	//for each row in table2
+				for (int o = 0; o < columns1.size(); o++) {	//add values from columns from table1
+					//product.get(o).add(columns1.get(o).get(m));
+				}
+				for (int p = columns1.size(); p < (columns1.size() + columns2.size()); p++) {	//add values from columns from table2
+					//product.get(p).add(columns2.get(p - columns1.size()).get(m));
+				}
+			}
+		}
+		return product;
+	}
+	
+	public static void query(String tableName, ArrayList<ArrayList<String>> data) {
+		ArrayList<String> key = new ArrayList<String>();
+		Table created = new Table(tableName,data,key);
+		tables.add(created);
+	}
 	
 	public static void main(String[] args) {
 		//starts DatabaseEngine
 		DatabaseEngine engine = new DatabaseEngine();
-		
 		
 		//all information needed to Create
 		String name = "people";
@@ -250,13 +684,13 @@ public class DatabaseEngine{
 		engine.insertD(name,second);
 		
 		//call show on people
+		System.out.println();
 		engine.showD(name);
 		
 		//removes element 2 sam
 		ArrayList<String> removing = new ArrayList<String>();
 		removing.add("2");
 		engine.deleteD(name,removing);
-		
 		
 		//change element 2 (hannah) to have 20 year
 		ArrayList<String> indexChange = new ArrayList<String>();
@@ -268,12 +702,22 @@ public class DatabaseEngine{
 		attributeChanges.add(attributeChange);
 		engine.updataD(name,indexChange,attributeChanges);
 		
-		
-		
 		//calls write
 		engine.writeD(name);
 		
+		//a <- rename (aname, akind) (project (name, kind) dogs);
+		ArrayList<String> nameKind = new ArrayList<String>();
+		nameKind.add("name");
+		nameKind.add("kind");
+		engine.query("a", projectionD("dogs", nameKind));
+		
+		engine.renamingD("a", "name", "aname");
+		engine.renamingD("a", "kind", "akind");
+		System.out.println();
+		engine.showD("a");
+		
 		//calls close removes people
+		System.out.println();
 		System.out.println("Before Close is called on dogs the engine holds "+ String.valueOf(engine.tables.size())+ " relations");
 		engine.closeD(name);
 		System.out.println("After Close is called on dogs the engine holds "+ String.valueOf(engine.tables.size())+ " relations");
@@ -283,12 +727,4 @@ public class DatabaseEngine{
 		System.out.println("Calling Exit...");
 		engine.exitD();
 	}
-	
-	
-	
-	
-	
-	
-	
-	
 }

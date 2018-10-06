@@ -96,7 +96,7 @@ public class Table{
 	public void changeElement(int index,ArrayList<ArrayList<String>> newAttribute){
 		for(int i = 0; i<newAttribute.size(); i++){
 			for(int k = 0; k<datas.size(); k++){
-				if(datas.get(k).get(0).equals(newAttribute.get(i).get(0)) && index < datas.get(k).size();){
+				if(datas.get(k).get(0).equals(newAttribute.get(i).get(0)) && index < datas.get(k).size()){
 					datas.get(k).set(index,newAttribute.get(i).get(1));
 				}
 			}
