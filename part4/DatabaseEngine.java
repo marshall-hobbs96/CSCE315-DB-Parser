@@ -739,12 +739,28 @@ public class DatabaseEngine{
 		tables.add(created);
 	}
 	
-	/*public static void main(String[] args) {
+	public static void query(String tableName, String relationName){
+		for(int i = 0; i<tables.size();i++){
+			if(tables.get(i).title.equals(relationName)){
+				ArrayList<ArrayList<String>> datasCopy = new ArrayList<ArrayList<String>>(tables.get(i).datas);
+				ArrayList<Integer> pKeyCopy = new ArrayList<Integer>(tables.get(i).pKey);
+				ArrayList<String> Key = new ArrayList<String>();
+				for(int k = 0; k<pKeyCopy.size(); k++){
+					Key.add(datasCopy.get(pKeyCopy.get(k)).get(0));
+				}
+				Table created = new Table(tableName,datasCopy,Key);
+				tables.add(created);
+				return;
+			}
+		}
+		System.out.println("Error: "+ relationName + " is not an existing relation in database");
+	}
+	
+	public static void main(String[] args) {
 		//starts DatabaseEngine
-		DatabaseEngine engine = new DatabaseEngine();
-		
+		//DatabaseEngine engine = new DatabaseEngine();
 		//all information needed to Create
-		String name = "people";
+	/*	String name = "people";
 		
 		//calls open
 		engine.openD("dogs");
@@ -846,6 +862,8 @@ public class DatabaseEngine{
 		//calls exit
 		System.out.println();
 		System.out.println("Calling Exit...");
-		engine.exitD();
+	engine.exitD();
 	}*/
+	
+	
 }
