@@ -80,7 +80,7 @@ show_cmd : 'SHOW' atomic_expression;	//shows atomic expression
 
 create_cmd : 'CREATE TABLE'  relation_name '('typed_attribute_list')'  'PRIMARY KEY'  '('attribute_list')';		//creates a new table, with a name and attribute list
 
-update_cmd : ('UPDATE' relation_name 'SEE' attribute_name '=' literal (',' literal)*) | ('INSERT INTO' relation_name 'VALUES FROM RELATION' expr);		//updates a relation's attribute with a new attribute. Alternatively, just adds another attribute to the relation
+update_cmd : ('UPDATE' relation_name 'SET' attribute_name '=' literal (',' literal)*) | ('INSERT INTO' relation_name 'VALUES FROM RELATION' expr);		//updates a relation's attribute with a new attribute. Alternatively, just adds another attribute to the relation
 
 insert_cmd : ('INSERT INTO'  relation_name  ('VALUES FROM' | 'VALUES FROM RELATION') ( '(' (literal (', 'literal)*)')' | expr)); //inserts into a relations attribute a new value
 
