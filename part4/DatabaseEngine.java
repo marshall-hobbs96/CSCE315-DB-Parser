@@ -151,7 +151,7 @@ public class DatabaseEngine{
 		
 	}*/
 	
-	public static void updataD(String name,ArrayList<String> satisfyCondition,ArrayList<ArrayList<String>> newAttribute){//first string is column name, second string is new literal
+	public static void updateD(String name,ArrayList<String> satisfyCondition,ArrayList<ArrayList<String>> newAttribute){//first string is column name, second string is new literal
 		for(int i = 0; i<tables.size();i++){  //change the values of all elements that meet a condition
 			if(tables.get(i).title.equals(name)){
 				for(int j = 0; j < satisfyCondition.size();j++){

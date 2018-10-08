@@ -155,13 +155,25 @@ public class ParserMasterListener extends ParserBaseListener {
 		ArrayList<String> keys = new ArrayList<String>();
 		int count = 0; 
 		
-		for(int i = 0; i < (((attribute_list.getChildCount() + 1) / 3) - 1); i++){
+		for(int i = 0; i < (((attribute_list.getChildCount() + 1) / 3)); i++){
 			
 			ArrayList<String> newArrayList = new ArrayList<String>();
 			datas.add(i, newArrayList);
 			datas.get(i).add(0, attribute_list.getChild(count).getText());
 			ParseTree varchar = attribute_list.getChild(count + 1);
-			datas.get(i).add(1, varchar.getChild(2).getText());
+			
+			if(varchar.getText().equals("INTEGER")) {
+				
+				datas.get(i).add(1, "-1");
+				
+			}
+			
+			else {
+				
+				datas.get(i).add(1, varchar.getChild(2).getText());
+				
+			}
+			
 			count = count + 3; 
 			
 			
@@ -188,13 +200,56 @@ public class ParserMasterListener extends ParserBaseListener {
 
 	@Override public void exitCreate_cmd(ParserParser.Create_cmdContext ctx) { }
 
-	@Override public void enterUpdate_cmd(ParserParser.Update_cmdContext ctx) { }
+	@Override public void enterUpdate_cmd(ParserParser.Update_cmdContext ctx) { 
+	
+	
+	}
 
-	@Override public void exitUpdate_cmd(ParserParser.Update_cmdContext ctx) { }
+	@Override public void exitUpdate_cmd(ParserParser.Update_cmdContext ctx) { 
+	
+		
+	
+	}
 
-	@Override public void enterInsert_cmd(ParserParser.Insert_cmdContext ctx) { }
+	@Override public void enterInsert_cmd(ParserParser.Insert_cmdContext ctx) {
+		
+	}
 
-	@Override public void exitInsert_cmd(ParserParser.Insert_cmdContext ctx) { }
+	@Override public void exitInsert_cmd(ParserParser.Insert_cmdContext ctx) {
+
+		List<ParseTree> tree = ctx.children;
+		String relation_name = tree.get(1).getText();
+		
+		String fork = tree.get(2).getText();
+		
+		if(fork.equals("VALUES FROM")){
+			
+			
+			int count = 4;
+			
+			ArrayList<String> element = new ArrayList<String>();
+			
+			for(int i = 0; i < ((tree.size() - 4) / 2); i++ ){
+				
+				ParseTree literal = tree.get(count);
+				System.out.println(literal.getText());
+				element.add(literal.getText());
+				count = count + 2;
+				
+			}
+			
+			DatabaseEngine.insertD(relation_name, element);
+			
+			return;
+		
+		}
+		
+		else if(fork.equals("VALUES FROM RELATION")) {
+			
+			
+			
+		}
+	}
 
 	@Override public void enterDelete_cmd(ParserParser.Delete_cmdContext ctx) {	}
 
@@ -205,10 +260,9 @@ public class ParserMasterListener extends ParserBaseListener {
 		String relation_name = relation.getText();
 		/*ParserParser.ConditionContext conditions = (ParserParser.ConditionContext) children.get(3).getPayload();
 		List<ParseTree> condition_tree = conditions.children;
-		String relation_name = relation.getText();
-		System.out.println("Deleting from " + relation_name + " where " + conditions.getText());
+		String relation_name = relation.getText();*/
 		
-		for(int i = 0; i < (conditions.getChildCount()); i++) {
+		/*for(int i = 0; i < (conditions.getChildCount()); i++) {
 			
 			System.out.println(conditions.depth());
 			System.out.println(conditions.getChildCount());
@@ -216,44 +270,52 @@ public class ParserMasterListener extends ParserBaseListener {
 		}*/
 		
 		ParseTree conditions = children.get(3);
+		
+		System.out.println("Deleting from " + relation_name + " where " + conditions.getText());
 		String op1 = conditions.getChild(0).getChild(0).getChild(0).getText();
 		String op2 = conditions.getChild(0).getChild(0).getChild(2).getText();
 		String cond = conditions.getChild(0).getChild(0).getChild(1).getText();
 		
 		if(cond.equals("==")){
 			
-			DatabaseEngine.equal(relation_name, op1, op2);
+			ArrayList<String> to_delete = DatabaseEngine.equal(relation_name, op1, op2);
+			DatabaseEngine.deleteD(relation_name, to_delete);
 			return;
 			
 		}
 		
 		else if(cond.equals("!=")) {
 			
-			DatabaseEngine.notEqual(relation_name, op1, op2);
+			ArrayList<String> to_delete = DatabaseEngine.notEqual(relation_name, op1, op2);
+			DatabaseEngine.deleteD(relation_name, to_delete);
 			return;
 		}
 		
 		else if(cond.equals("<")) {
 			
-			DatabaseEngine.less(relation_name, op1, op2);
+			ArrayList<String> to_delete = DatabaseEngine.less(relation_name, op1, op2);
+			DatabaseEngine.deleteD(relation_name, to_delete);
 			return;
 		}
 		
 		else if (cond.equals(">")) {
 			
-			DatabaseEngine.greater(relation_name, op1, op2);
+			ArrayList<String> to_delete = DatabaseEngine.greater(relation_name, op1, op2);
+			DatabaseEngine.deleteD(relation_name, to_delete);
 			return;
 		}
 		
 		else if (cond.equals("<=")) {
 			
-			DatabaseEngine.lessEqual(relation_name, op1, op2);
+			ArrayList<String> to_delete = DatabaseEngine.lessEqual(relation_name, op1, op2);
+			DatabaseEngine.deleteD(relation_name, to_delete);
 			return;
 		}
 		
 		else if (cond.equals(">=")) {
 			
-			DatabaseEngine.greaterEqual(relation_name, op1, op2);
+			ArrayList<String> to_delete = DatabaseEngine.greaterEqual(relation_name, op1, op2);
+			DatabaseEngine.deleteD(relation_name, to_delete);
 			return;
 		}
 		
@@ -267,6 +329,16 @@ public class ParserMasterListener extends ParserBaseListener {
 		return;
 
 
+	}
+	
+	@Override public void enterQuery(ParserParser.QueryContext ctx) {
+		
+		ParseTree relation = ctx.getChild(0);
+		ParseTree condition = ctx.getChild(2);
+		
+		System.out.println(relation.getText() + condition.getText());
+		return;
+		
 	}
 
 
