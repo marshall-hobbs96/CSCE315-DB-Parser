@@ -39,6 +39,7 @@ public class Table{
 					ele.set(j,ele.get(j).substring(0,Integer.parseInt(datas.get(j).get(1))));
 				}
 			}
+			
 			if(isUnique(ele)){
 				for(int i = 0;i<ele.size();i++){
 					datas.get(i).add(ele.get(i));
@@ -55,14 +56,15 @@ public class Table{
 	
 	public Boolean isUnique(ArrayList<String> ele){  //check the primary keys for each row and make sure there are no duplicates
 		for(int j = 0; j<datas.get(0).size();j++){
-			Boolean notSame = true;
+			int sameCount = 0;
 			for(int k = 0; k<pKey.size();k++){
-				if(notSame == true && ele.get(k) != datas.get(k).get(j)){
-					notSame = true;
+				if(ele.get(pKey.get(k)).equals(datas.get(pKey.get(k)).get(j))){
+					sameCount++;
 				}
-				else{
-					return false;
-				}
+			}
+			//System.out.println(sameCount);
+			if(sameCount == pKey.size()){
+				return false;
 			}
 		}
 		return true;

@@ -14,7 +14,8 @@ public class DatabaseEngine{
 	
 	public static void openD(String name){
 		try{
-			FileReader fr = new FileReader("dogs.db"); 	//reads input file
+			String fileName = name + ".db";
+			FileReader fr = new FileReader(fileName); 	//reads input file
 
 			int i; 
 			boolean middleWord = false;
@@ -136,20 +137,21 @@ public class DatabaseEngine{
 			}
 		}
 	}
-	public static void showD(Table table){	//print table to command line
-				table.tablePrint();
-				return;
+	public static void showD(ArrayList<ArrayList<String>> data){	//print table to command line
+		for(int i = 0; i<data.get(0).size(); i++){
+			for(int j = 0; j<data.size(); j++){
+				System.out.print(data.get(j).get(i));
+				System.out.print("\t");
+			}
+			System.out.print("\n");
+		}
+		return;
 	}
 	
 	public static void createD(String name, ArrayList<ArrayList<String>> columns, ArrayList<String> pKey){	
 		tables.add(new Table(name,columns, pKey)); //create a new relation and add it to tables
 	}
 	
-	/*public static void createD(String name, ParseTree columns, ParseTree pKey){
-		
-		//System.out.println(columns.)
-		
-	}*/
 	
 	public static void updateD(String name,ArrayList<String> satisfyCondition,ArrayList<ArrayList<String>> newAttribute){//first string is column name, second string is new literal
 		for(int i = 0; i<tables.size();i++){  //change the values of all elements that meet a condition
@@ -163,10 +165,26 @@ public class DatabaseEngine{
 		}
 	}
 	
-	public static void insertD(String name, ArrayList<String> element){  //add a row to a relation
+	public static void insertSingleD(String name, ArrayList<String> element){  //add a row to a relation
 		for(int i = 0; i<tables.size();i++){
 			if(tables.get(i).title.equals(name)){
 				tables.get(i).addElement(element);
+				return;
+			}
+		}
+		System.out.println("Error: table does not exist");
+	}
+	
+	public static void insertMultiD(String name, ArrayList<ArrayList<String>> elements){  //add a row to a relation
+		for(int i = 0; i<tables.size();i++){
+			if(tables.get(i).title.equals(name)){
+				for(int j = 2; j<elements.get(0).size(); j++){
+					ArrayList<String> element = new ArrayList<String>();
+					for(int k = 0; k < elements.size();k++){
+						element.add(new String(elements.get(k).get(j)));
+					}
+					tables.get(i).addElement(element);
+				}
 				return;
 			}
 		}
@@ -568,14 +586,15 @@ public class DatabaseEngine{
 			}		
 			for(int t = 2; t<columns2.get(0).size(); t++){	//column2 row
 				boolean completeUniqe = true;
-				 for(int p = 2; p < union.get(0).size(); p++){// rows of union
-					boolean uniqe = false;
+				for(int p = 2; p < union.get(0).size(); p++){// rows of union
+					int sameCount = 0;
 					for(int u = 0; u<union.size(); u++){//columns of union
-						if(columns2.get(u).get(t) != union.get(u).get(p) && !uniqe){
-							uniqe = true;
+						if(columns2.get(u).get(t).equals(union.get(u).get(p))){
+							sameCount++;
 						}
 					}
-					if(!uniqe){
+					System.out.println(sameCount);
+					if(sameCount == union.size()){
 						completeUniqe = false;
 					}
 				}
@@ -758,7 +777,14 @@ public class DatabaseEngine{
 	
 	public static void main(String[] args) {
 		//starts DatabaseEngine
-		//DatabaseEngine engine = new DatabaseEngine();
+		DatabaseEngine engine = new DatabaseEngine();
+		engine.openD("dogs");
+		//engine.showD("dogs");
+		engine.openD("people");
+		//engine.showD("people");
+		engine.insertMultiD("people",differenceD("people","dogs"));
+		engine.showD("people");
+		engine.exitD();
 		//all information needed to Create
 	/*	String name = "people";
 		
@@ -862,8 +888,6 @@ public class DatabaseEngine{
 		//calls exit
 		System.out.println();
 		System.out.println("Calling Exit...");
-	engine.exitD();
-	}*/
-	
-	
+		engine.exitD();*/
+	}	
 }
