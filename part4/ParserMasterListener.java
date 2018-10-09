@@ -238,8 +238,7 @@ public class ParserMasterListener extends ParserBaseListener {
 				
 			}
 			
-			DatabaseEngine.insertD(relation_name, element);
-			
+			DatabaseEngine.insertSingleD(relation_name, element);
 			return;
 		
 		}
