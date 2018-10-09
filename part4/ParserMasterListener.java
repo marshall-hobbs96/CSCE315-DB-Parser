@@ -221,7 +221,6 @@ public class ParserMasterListener extends ParserBaseListener {
 		String relation_name = tree.get(1).getText();
 		
 		String fork = tree.get(2).getText();
-		
 		if(fork.equals("VALUES FROM")){
 			
 			
@@ -232,7 +231,6 @@ public class ParserMasterListener extends ParserBaseListener {
 			for(int i = 0; i < ((tree.size() - 4) / 2); i++ ){
 				
 				ParseTree literal = tree.get(count);
-				System.out.println(literal.getText());
 				element.add(literal.getText());
 				count = count + 2;
 				
@@ -246,7 +244,7 @@ public class ParserMasterListener extends ParserBaseListener {
 		
 		else if(fork.equals("VALUES FROM RELATION")) {
 			
-			
+			String from_relation = tree.get(3).getText();
 			
 		}
 	}
@@ -335,13 +333,167 @@ public class ParserMasterListener extends ParserBaseListener {
 		
 		ParseTree relation = ctx.getChild(0);
 		ParseTree condition = ctx.getChild(2);
+		ParserParser.ExprContext condition_tree = (ParserParser.ExprContext) condition.getPayload();
 		
-		System.out.println(relation.getText() + condition.getText());
+		//System.out.println(relation.getText() + " " + condition.getText());
+		//System.out.println(condition_tree.depth());
+		
+		ArrayList<String> list = new ArrayList<String>();
+		
+		list = populateList(condition, list);
+		//list = convert_to_postfix(list);
+		
+		ArrayList<ArrayList<String>> comparison_results = new ArrayList<ArrayList<String>>();
+		
+		for(int i = 0; i < list.size(); i++) {
+			
+			String op1 = list.get(i);
+			System.out.print(op1);
+			
+		}	
+		
+		System.out.println(" ");
+		
 		return;
 		
 	}
 
+	public ArrayList<String> populateList(ParseTree tree, ArrayList<String> list) {
+	
+		while(tree.getChildCount() != 0) {
+			
+			
+			if(tree.getChildCount() == 1) {
+				
+				tree = tree.getChild(0);
+				
+			}
+			
+			else if (tree.getChildCount() == 2) {
+				
+				list = populateList(tree.getChild(0), list);
+				list = populateList(tree.getChild(1), list);
+				break;
+				
+			}
+			
+			else if(tree.getChildCount() == 3) {
+				
+				list = populateList(tree.getChild(0), list);
+				list = populateList(tree.getChild(1), list);
+				list = populateList(tree.getChild(2), list);
+				break;
+				
+			}
+			
+			else if(tree.getChildCount() == 4) {
+				
+				list = populateList(tree.getChild(0), list);
+				list = populateList(tree.getChild(1), list);
+				list = populateList(tree.getChild(2), list);
+				list = populateList(tree.getChild(3), list);
+				break;
+				
+			}
+			
+			else if(tree.getChildCount() == 5) {
+				
+				list = populateList(tree.getChild(0), list);
+				list = populateList(tree.getChild(1), list);
+				list = populateList(tree.getChild(2), list);
+				list = populateList(tree.getChild(3), list);
+				list = populateList(tree.getChild(4), list);
+				break;
+				
+			}
+			
+			else{
+				
+				//shouldnt happen
+				break;
+				
+			}
+		
+		}
+		
+		if(tree.getText().equals("\"")) {
+			
+			return list; 
+			
+		}
+		
+		else {
+			
+			if(tree.getChildCount() == 0) {
+				
+				list.add(tree.getText());
+				
+			}
+			
+		}
+		
+		return list;
+		
+	}
+	
+	public void run_commands(ArrayList<String> arguments) {
+		
+		String first = arguments.get(0);
+		
+		if(first.equals("select") || first.equals("project") || first.equals("rename")) {
+			
 
+			
+		}	
+		
+	}
+	
+	public ArrayList<String> convert_to_postfix(ArrayList<String> arguments) {
+		
+		ArrayList<String> output = new ArrayList<String>();
+		Stack<String> opstack = new Stack<String>();
+		
+		for(int i = 0; i < arguments.size(); i ++) {
+			
+			String instance = arguments.get(i);
+			
+			if(instance.equals("select") || instance.equals("project") || instance.equals("rename") || instance.equals("+") || instance.equals("-") || instance.equals("*") || instance.equals("&") || instance.equals("(")) {
+				
+				opstack.push(instance);
+				
+			}
+			
+			else if (instance.equals(")")) {
+				
+				String op = opstack.pop();
+				output.add(op);
+				
+				while((op.equals("select") || op.equals("project") || op.equals("rename")) != true) {
+					
+					op = opstack.pop();
+					output.add(op);
+					
+				}
+				
+			}
+			
+			else {
+				
+				output.add(instance);
+				
+			}
+			
+		}
+		
+		for(int i = 0; i < opstack.size(); i++) {
+			
+			output.add(opstack.pop());
+			
+		}
+		
+		return output; 
+		
+	}
 
 	@Override public void visitTerminal(TerminalNode node) { }
 
