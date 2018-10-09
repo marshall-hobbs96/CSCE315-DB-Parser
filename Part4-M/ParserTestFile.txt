@@ -1,0 +1,8 @@
+OPEN animals;
+OPEN dogs;
+OPEN people;
+dogs <- select (kind == "dog") animals;
+stuff <- (people - dogs) - (people - dogs);
+more_stuff <- (people - dogs) + (people - dogs);
+hello <- (people * dogs) * (dogs * people);
+EXIT;
