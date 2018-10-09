@@ -1,7 +1,0 @@
-hello friend
-
-i have had a bad day
-I hope it gets better
-
-SHOW animals;
-SHOW animals

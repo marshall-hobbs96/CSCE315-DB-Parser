@@ -1,0 +1,6 @@
+"VMID"
+"CRN"	"Subj"	"Crse"	"Sec"	"Cmp"	"Cred"	"Title"	"Days"	"Time"	"Cap"	"Act"	"Rem"	"Instructor"	"Date"	"Location"	"Attribute"
+"36994"	"VMID"	"689"	"600"	"CS"	"2"	"SPTP: FOUND BIOMED GRAD EDU "	"R"	"10:00 am-11:50 am"	"35"	"27"	"8"	"""Robert Burghardt (P)"	" Michael D. Kessler"""	"08/27-12/12"	"VIDI 102"
+"13396"	"VMID"	"925"	"301"	"CS"	"2"	"DIAG IMAGING INTERPRE I "	" "	"TBA"	"135"	"134"	"1"	"John F. Griffin (P)"	"08/20-12/07"	"TBA"	"NonTraditional Format Exclude"
+"13398"	"VMID"	"935"	"301"	"CS"	"4"	"SURGERY "	" "	"TBA"	"0"	"134"	"-134"	"TBA"	"08/20-12/07"	"TBA"	"NonTraditional Format Exclude"
+"13401"	"VMID"	"952"	"301"	"CS"	"1"	"CLINICS 1 "	" "	"TBA"	"135"	"134"	"1"	"""Karen Cornell (P)"	" Susan Eades"""	"08/20-12/07"	"TBA"
