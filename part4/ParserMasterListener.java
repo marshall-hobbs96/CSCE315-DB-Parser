@@ -442,10 +442,39 @@ public class ParserMasterListener extends ParserBaseListener {
 		
 		if(first.equals("select") || first.equals("project") || first.equals("rename")) {
 			
-
+			int count = 1;
+			int start = 2;
+			int end = 2; 
 			
+			while(count > 0) {
+				
+				String op = arguments.get(end);
+				
+				if(op.equals(")")) {
+					
+					count --; 
+					
+				}
+				
+				else if (op.equals("(")) {
+					
+					count ++; 
+				
+				}
+				
+				else{
+					
+					end++;
+					
+				}
+			}
+			
+			for(
+			
+				
+				
+			)
 		}	
-		
 	}
 	
 	public ArrayList<String> convert_to_postfix(ArrayList<String> arguments) {
