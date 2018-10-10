@@ -7,12 +7,34 @@ public class DatabaseEngine{
 	//hold all relations in main core
 	public static ArrayList<Table> tables;
 	public static Stack<Table> table_stack;
+	public static Stack<ArrayList<String>> comparison_stack;
+	public static Stack<String> select_tables;
+	public static Stack<ArrayList<String>> conjunction_results_stack;
+	public static Stack<ArrayList<String>> condition_results_stack;
+	public static Stack<ArrayList<ArrayList<String>>> selection_results_stack;
 	
 	public DatabaseEngine(){
 		ArrayList<Table> name = new ArrayList<Table>();
 		tables = name;
 		Stack<Table> stack = new Stack<Table>();
 		table_stack = stack;
+		Stack<ArrayList<String>> compare = new Stack<ArrayList<String>>();
+		comparison_stack = compare;
+		Stack<String> tabs = new Stack<String>();
+		select_tables = tabs;
+		Stack<ArrayList<String>> conjunction = new Stack<ArrayList<String>>();
+		Stack<ArrayList<String>> condition = new Stack<ArrayList<String>>();
+		Stack<ArrayList<ArrayList<String>>> select = new Stack<ArrayList<ArrayList<String>>>();
+		conjunction_results_stack = conjunction;
+		condition_results_stack = condition;
+		selection_results_stack = select;
+		
+	}
+	
+	public static void enterSelect(String table_name) {
+		
+		select_tables.push(table_name);
+		return;
 		
 	}
 	
@@ -207,6 +229,45 @@ public class DatabaseEngine{
 		}
 	}
 
+	public static ArrayList<String> equal(String column, String value){
+		ArrayList<String> equalRows = new ArrayList<String>();
+		ArrayList<ArrayList<String>> columns = new ArrayList<ArrayList<String>>();
+		String tableName = select_tables.peek();
+		int twoColumns = 0;	//use to check if comparing two columns or values
+		for (int i = 0; i < tables.size(); i++) {	//find table
+			if (tables.get(i).getName().equals(tableName)) {
+				columns = tables.get(i).datas;
+			}
+		}
+		ArrayList<String> column1 = new ArrayList<String>();
+		ArrayList<String> column2 = new ArrayList<String>();
+		for (int j = 0; j < columns.size(); j++) {	//see if value matches a column name
+			if (value.equals(columns.get(j).get(0))) {
+				column2 = columns.get(j);
+				twoColumns = 1;
+			}
+			if (column.equals(columns.get(j).get(0))) {
+				column1 = columns.get(j);
+			}
+		}
+		if (twoColumns == 1) {
+			for (int k = 2; k < column1.size(); k++) {  //if two columns, compare the column values in each row
+				if (column1.get(k).equals(column2.get(k))) {
+					equalRows.add(String.valueOf(k));	//add the matches to output
+				}	
+			}
+		}
+		else {
+			for (int k = 2; k < column1.size(); k++) { //compare value to each row in that column and add matches to output
+				if (column1.get(k).equals(value)) {
+					equalRows.add(String.valueOf(k));
+				}
+			}
+		}
+		comparison_stack.push(equalRows);
+		return equalRows;
+	}
+	
 	public static ArrayList<String> equal(String tableName, String column, String value){
 		ArrayList<String> equalRows = new ArrayList<String>();
 		ArrayList<ArrayList<String>> columns = new ArrayList<ArrayList<String>>();
@@ -244,6 +305,7 @@ public class DatabaseEngine{
 		return equalRows;
 	}
 	
+	
 	public static ArrayList<String> notEqual(String tableName, String column, String value){ //same as equals, except finding values that aren't equal
 		ArrayList<String> notEqualRows = new ArrayList<String>();
 		ArrayList<ArrayList<String>> columns = new ArrayList<ArrayList<String>>();
@@ -278,6 +340,45 @@ public class DatabaseEngine{
 				}
 			}
 		}
+		return notEqualRows;
+	}
+	
+	public static ArrayList<String> notEqual(String column, String value){ //same as equals, except finding values that aren't equal
+		ArrayList<String> notEqualRows = new ArrayList<String>();
+		ArrayList<ArrayList<String>> columns = new ArrayList<ArrayList<String>>();
+		String tableName = select_tables.peek();
+		int twoColumns = 0;
+		for (int i = 0; i < tables.size(); i++) {
+			if (tables.get(i).getName().equals(tableName)) {
+				columns = tables.get(i).datas;
+			}
+		}
+		ArrayList<String> column1 = new ArrayList<String>();
+		ArrayList<String> column2 = new ArrayList<String>();
+		for (int j = 0; j < columns.size(); j++) {
+			if (value.equals(columns.get(j).get(0))) {
+				column2 = columns.get(j);
+				twoColumns = 1;
+			}
+			if (column.equals(columns.get(j).get(0))) {
+				column1 = columns.get(j);
+			}
+		}
+		if (twoColumns == 1) {
+			for (int k = 2; k < column1.size(); k++) {
+				if (!column1.get(k).equals(column2.get(k))) {
+					notEqualRows.add(String.valueOf(k));
+				}	
+			}
+		}
+		else {
+			for (int k = 2; k < column1.size(); k++) {
+				if (!column1.get(k).equals(value)) {
+					notEqualRows.add(String.valueOf(k));
+				}
+			}
+		}
+		comparison_stack.push(notEqualRows);
 		return notEqualRows;
 	}
 	
@@ -318,6 +419,48 @@ public class DatabaseEngine{
 		return greaterRows;
 	}
 	
+	public static ArrayList<String> greater(String column, String value){  //same as equals, except finding values that are greater than
+		ArrayList<String> greaterRows = new ArrayList<String>();
+		ArrayList<ArrayList<String>> columns = new ArrayList<ArrayList<String>>();
+		String tableName = select_tables.peek();
+		int twoColumns = 0;
+		for (int i = 0; i < tables.size(); i++) {
+			if (tables.get(i).getName().equals(tableName)) {
+				columns = tables.get(i).datas;
+			}
+		}
+		ArrayList<String> column1 = new ArrayList<String>();
+		ArrayList<String> column2 = new ArrayList<String>();
+		for (int j = 0; j < columns.size(); j++) {
+			if (value.equals(columns.get(j).get(0))) {
+				column2 = columns.get(j);
+				twoColumns = 1;
+			}
+			if (column.equals(columns.get(j).get(0))) {
+				column1 = columns.get(j);
+			}
+		}
+		if (twoColumns == 1) {
+			for (int k = 2; k < column1.size(); k++) {
+				if (Integer.parseInt(column1.get(k)) > Integer.parseInt(column2.get(k))) {
+					greaterRows.add(String.valueOf(k));
+				}	
+			}
+		}
+		else {
+			for (int k = 2; k < column1.size(); k++) {
+				if (Integer.parseInt(column1.get(k)) > Integer.parseInt(value)) {
+					greaterRows.add(String.valueOf(k));
+				}
+			}
+		}
+		
+		comparison_stack.push(greaterRows);
+		return greaterRows;
+	}
+	
+	
+	
 	public static ArrayList<String> less(String tableName, String column, String value){  //same as equals, except finding values that are less than
 		ArrayList<String> lessRows = new ArrayList<String>();
 		ArrayList<ArrayList<String>> columns = new ArrayList<ArrayList<String>>();
@@ -352,6 +495,45 @@ public class DatabaseEngine{
 				}
 			}
 		}
+		return lessRows;
+	}
+	
+	public static ArrayList<String> less(String column, String value){  //same as equals, except finding values that are less than
+		ArrayList<String> lessRows = new ArrayList<String>();
+		ArrayList<ArrayList<String>> columns = new ArrayList<ArrayList<String>>();
+		String tableName = select_tables.peek();
+		int twoColumns = 0;
+		for (int i = 0; i < tables.size(); i++) {
+			if (tables.get(i).getName().equals(tableName)) {
+				columns = tables.get(i).datas;
+			}
+		}
+		ArrayList<String> column1 = new ArrayList<String>();
+		ArrayList<String> column2 = new ArrayList<String>();
+		for (int j = 0; j < columns.size(); j++) {
+			if (value.equals(columns.get(j).get(0))) {
+				column2 = columns.get(j);
+				twoColumns = 1;
+			}
+			if (column.equals(columns.get(j).get(0))) {
+				column1 = columns.get(j);
+			}
+		}
+		if (twoColumns == 1) {
+			for (int k = 2; k < column1.size(); k++) {
+				if (Integer.parseInt(column1.get(k)) < Integer.parseInt(column2.get(k))) {
+					lessRows.add(String.valueOf(k));
+				}	
+			}
+		}
+		else {
+			for (int k = 2; k < column1.size(); k++) {
+				if (Integer.parseInt(column1.get(k)) < Integer.parseInt(value)) {
+					lessRows.add(String.valueOf(k));
+				}
+			}
+		}
+		comparison_stack.push(lessRows);
 		return lessRows;
 	}
 	
@@ -392,6 +574,45 @@ public class DatabaseEngine{
 		return greaterEqRows;
 	}
 	
+	public static ArrayList<String> greaterEqual(String column, String value){ ////same as equals, except finding values that are greater than or equal
+		ArrayList<String> greaterEqRows = new ArrayList<String>();
+		ArrayList<ArrayList<String>> columns = new ArrayList<ArrayList<String>>();
+		String tableName = select_tables.peek();
+		int twoColumns = 0;
+		for (int i = 0; i < tables.size(); i++) {
+			if (tables.get(i).getName().equals(tableName)) {
+				columns = tables.get(i).datas;
+			}
+		}
+		ArrayList<String> column1 = new ArrayList<String>();
+		ArrayList<String> column2 = new ArrayList<String>();
+		for (int j = 0; j < columns.size(); j++) {
+			if (value.equals(columns.get(j).get(0))) {
+				column2 = columns.get(j);
+				twoColumns = 1;
+			}
+			if (column.equals(columns.get(j).get(0))) {
+				column1 = columns.get(j);
+			}
+		}
+		if (twoColumns == 1) {
+			for (int k = 2; k < column1.size(); k++) {
+				if (Integer.parseInt(column1.get(k)) >= Integer.parseInt(column2.get(k))) {
+					greaterEqRows.add(String.valueOf(k));
+				}	
+			}
+		}
+		else {
+			for (int k = 2; k < column1.size(); k++) {
+				if (Integer.parseInt(column1.get(k)) >= Integer.parseInt(value)) {
+					greaterEqRows.add(String.valueOf(k));
+				}
+			}
+		}
+		comparison_stack.push(greaterEqRows);
+		return greaterEqRows;
+	}
+	
 	public static ArrayList<String> lessEqual(String tableName, String column, String value){  //same as equals, except finding values that are less than or equal
 		ArrayList<String> lessEqRows = new ArrayList<String>();
 		ArrayList<ArrayList<String>> columns = new ArrayList<ArrayList<String>>();
@@ -429,6 +650,45 @@ public class DatabaseEngine{
 		return lessEqRows;
 	}
 	
+	public static ArrayList<String> lessEqual(String column, String value){  //same as equals, except finding values that are less than or equal
+		ArrayList<String> lessEqRows = new ArrayList<String>();
+		ArrayList<ArrayList<String>> columns = new ArrayList<ArrayList<String>>();
+		String tableName = select_tables.peek();
+		int twoColumns = 0;
+		for (int i = 0; i < tables.size(); i++) {
+			if (tables.get(i).getName().equals(tableName)) {
+				columns = tables.get(i).datas;
+			}
+		}
+		ArrayList<String> column1 = new ArrayList<String>();
+		ArrayList<String> column2 = new ArrayList<String>();
+		for (int j = 0; j < columns.size(); j++) {
+			if (value.equals(columns.get(j).get(0))) {
+				column2 = columns.get(j);
+				twoColumns = 1;
+			}
+			if (column.equals(columns.get(j).get(0))) {
+				column1 = columns.get(j);
+			}
+		}
+		if (twoColumns == 1) {
+			for (int k = 2; k < column1.size(); k++) {
+				if (Integer.parseInt(column1.get(k)) <= Integer.parseInt(column2.get(k))) {
+					lessEqRows.add(String.valueOf(k));
+				}	
+			}
+		}
+		else {
+			for (int k = 2; k < column1.size(); k++) {
+				if (Integer.parseInt(column1.get(k)) <= Integer.parseInt(value)) {
+					lessEqRows.add(String.valueOf(k));
+				}
+			}
+		}
+		comparison_stack.push(lessEqRows);
+		return lessEqRows;
+	}
+	
 	public static ArrayList<String> and(ArrayList<String> arg1, ArrayList<String> arg2){
 		ArrayList<String> both = new ArrayList<String>();  //search through lists of row numbers and output the common elements of the lists
 		for (int i = 0; i < arg1.size(); i++) {
@@ -439,6 +699,45 @@ public class DatabaseEngine{
 			}
 		}
 		return both;
+	}
+	
+	public static void and(){
+		ArrayList<String> both = new ArrayList<String>();  //search through lists of row numbers and output the common elements of the lists
+		ArrayList<String> arg1 = comparison_stack.pop();
+		ArrayList<String> arg2 = comparison_stack.pop();
+		for (int i = 0; i < arg1.size(); i++) {
+			for (int j = 0; j < arg2.size(); j++) {
+				if (arg1.get(i).equals(arg2.get(j))) {
+					both.add(arg1.get(i));
+				}
+			}
+		}
+		
+		conjunction_results_stack.push(both);
+		return;
+	}
+	
+	public static void and1(){
+		ArrayList<String> both = new ArrayList<String>();  //search through lists of row numbers and output the common elements of the lists
+		ArrayList<String> arg1 = comparison_stack.pop();
+		ArrayList<String> arg2 = comparison_stack.pop();
+		for (int i = 0; i < arg1.size(); i++) {
+			for (int j = 0; j < arg2.size(); j++) {
+				if (arg1.get(i).equals(arg2.get(j))) {
+					both.add(arg1.get(i));
+				}
+			}
+		}
+		
+		comparison_stack.push(both);
+		return;
+	}
+	
+	public static void and2(){
+		
+		ArrayList<String> arg1 = comparison_stack.pop();
+		conjunction_results_stack.push(arg1);
+		return;
 	}
 	
 	public static ArrayList<String> or(ArrayList<String> arg1, ArrayList<String> arg2){
@@ -465,6 +764,71 @@ public class DatabaseEngine{
 			}
 		}
 		return atLeastOne;
+	}
+	
+	public static void or(){
+		ArrayList<String> atLeastOne = new ArrayList<String>(); //search through lists of row numbers and output the union of the lists
+		ArrayList<String> arg1 = conjunction_results_stack.pop();
+		ArrayList<String> arg2 = conjunction_results_stack.pop();
+		int i = 0; //use to increment arg1
+		int j = 0; //use to increment arg2
+		int value1 = 0; //use to compare int value from arg1
+		int value2 = 0; //use to compare int value from arg2
+		while ((i < arg1.size())&&(j < arg2.size())) {
+			value1 = Integer.parseInt(arg1.get(i));
+			value2 = Integer.parseInt(arg2.get(j));
+			if (value1 < value2) { 
+				atLeastOne.add(arg1.get(i));
+				i++;
+			}
+			else if (value1 > value2) { 
+				atLeastOne.add(arg2.get(i));
+				j++;
+			}
+			else if (value1 == value2) { 
+				atLeastOne.add(arg1.get(i));
+				i++;
+				j++;
+			}
+		}
+		condition_results_stack.push(atLeastOne);
+		return;
+	}
+	
+	public static void or1(){
+		ArrayList<String> atLeastOne = new ArrayList<String>(); //search through lists of row numbers and output the union of the lists
+		ArrayList<String> arg1 = conjunction_results_stack.pop();
+		ArrayList<String> arg2 = conjunction_results_stack.pop();
+		int i = 0; //use to increment arg1
+		int j = 0; //use to increment arg2
+		int value1 = 0; //use to compare int value from arg1
+		int value2 = 0; //use to compare int value from arg2
+		while ((i < arg1.size())&&(j < arg2.size())) {
+			value1 = Integer.parseInt(arg1.get(i));
+			value2 = Integer.parseInt(arg2.get(j));
+			if (value1 < value2) { 
+				atLeastOne.add(arg1.get(i));
+				i++;
+			}
+			else if (value1 > value2) { 
+				atLeastOne.add(arg2.get(i));
+				j++;
+			}
+			else if (value1 == value2) { 
+				atLeastOne.add(arg1.get(i));
+				i++;
+				j++;
+			}
+		}
+		comparison_stack.push(atLeastOne);
+		return;
+	}
+	
+	public static void or2(){
+		
+		ArrayList<String> arg2 = conjunction_results_stack.pop();
+		condition_results_stack.push(arg2);
+		return;
 	}
 	
 	public static ArrayList<ArrayList<String>> selectionD(String tableName, ArrayList<String> rows){
@@ -494,6 +858,39 @@ public class DatabaseEngine{
 		return selectedRows;
 	}
 	
+	public static void selectionD(String tableName){
+		ArrayList<Integer> rowNums = new ArrayList<Integer>(); //for output
+		ArrayList<ArrayList<String>> columns = new ArrayList<ArrayList<String>>();
+		ArrayList<ArrayList<String>> selectedRows = new ArrayList<ArrayList<String>>();
+		ArrayList<String> rows = condition_results_stack.pop();
+		
+		for (int i = 0; i < rows.size(); i++) {	//convert from string to vector
+			rowNums.add(Integer.parseInt(rows.get(i)));
+		}
+		for (int j = 0; j < tables.size(); j++) {
+			if (tableName.equals(tables.get(j).getName())) {
+				columns = tables.get(j).datas;	//get data from table
+			}
+		}
+		int numColumns = columns.size();
+		for (int k = 0; k < numColumns; k++) {	//add the correct elements from each column to their vectors
+			ArrayList<String> newColumn = new ArrayList<String>();
+			ArrayList<String> tempColumn = new ArrayList<String>();
+			tempColumn = columns.get(k);
+			newColumn.add(tempColumn.get(0));
+			newColumn.add(tempColumn.get(1));
+			for (int m = 0; m < rows.size(); m++) {
+				newColumn.add(tempColumn.get(rowNums.get(m)));
+			}
+			selectedRows.add(newColumn); //add column with all of the rows it should have
+		}
+		
+		
+		
+		selection_results_stack.push(selectedRows);
+		return;
+	}
+	
 	public static ArrayList<ArrayList<String>> projectionD(String tableName, ArrayList<String> columns){
 		ArrayList<ArrayList<String>> projectedColumn = new ArrayList<ArrayList<String>>();
 		String columnName;
@@ -512,7 +909,7 @@ public class DatabaseEngine{
 		return projectedColumn;
 	}
 	
-	public void renamingD(String tableName, String origName, String newName){
+	public static void renamingD(String tableName, String origName, String newName){
 		for (int i = 0; i < tables.size(); i++) {	
 			if (tables.get(i).getName().equals(tableName)) {
 				for (int j = 0; j < ((tables.get(i)).datas).size(); j++) {
@@ -932,6 +1329,113 @@ public class DatabaseEngine{
 			}			
 		}
 		
+		else if(table1Name == null) {
+			
+			//find the input tables in the database list
+			boolean exists1 = false;
+			boolean exists2 = false; 
+			
+			for (int i = 0; i < tables.size(); i++) {
+				if (tables.get(i).getName().equals(table1Name)) {
+					columns1 = new ArrayList<ArrayList<String>>(tables.get(i).datas);
+					exists1 = true;
+				}
+			}
+			
+			columns2 = table_stack.pop().datas;
+			
+			//check if the tables are difference compatable
+			if (columns1.size() != columns2.size()) {
+				System.out.println("Unable to perform difference - unnequal number of columns.");
+			}
+			
+			else if ((exists1 == false)) {
+				
+				System.out.println("Error (difference), relations" + table1Name + ", " + table2Name + " do not exists");
+				
+			}
+			
+			else {	//only continue if they are difference compatable
+				//true if all columns have the same type
+				int sameTypes = 1;
+				int type1 = 0;
+				int type2 = 0;
+				//a max char value of -1 indicates the type is integer
+				for (int j = 0; j < columns1.size(); j++) {
+					type1 = Integer.parseInt(new String(columns1.get(j).get(1)));
+					type2 = Integer.parseInt(new String(columns2.get(j).get(1)));
+					if (type1 > 0) { type1 = 1; }
+					else if (type1 < 0) { type1 = -1; }
+					if (type2 > 0) { type2 = 1; }
+					else if (type2 < 0) { type2 = -1; }
+					//if the types were not equal, don't continue
+					if (type1 != type2) {
+						System.out.println("Unable to perform difference - incompatible types.");
+					}
+					else {	//continue if the types are equal
+						ArrayList<String> newColumn = new ArrayList<String>();
+						int largestChar = 0;
+						if (type1 != -1) {	//if they aren't integers
+							//find the largest max char value
+							if (Integer.parseInt(columns1.get(j).get(1)) >= Integer.parseInt(columns2.get(j).get(1))) {
+								largestChar = Integer.parseInt(new String(columns1.get(j).get(1)));
+							}
+							else { 
+								largestChar = Integer.parseInt(columns2.get(j).get(1)); 
+							}
+						}
+						//keep the type as integer
+						else { 
+							largestChar = -1; 
+						}
+							//use the name from the first table and largest char max
+						newColumn.add(new String(columns1.get(j).get(0)));
+						newColumn.add(String.valueOf(largestChar));
+						difference.add(newColumn);
+					}
+				}
+					for(int t = 2; t<columns2.get(0).size(); t++){//column2 row
+						boolean completeUniqe = true;
+						for(int p = 2; p < columns1.get(0).size(); p++){// rows of difference
+							boolean uniqe = false;
+							for(int u = 0; u<columns1.size(); u++){//columns of difference
+								if(!columns2.get(u).get(t).equals(columns1.get(u).get(p)) && !uniqe){
+									uniqe = true;
+								}
+							}
+							if(!uniqe){
+								completeUniqe = false;
+							}
+						}
+						if(completeUniqe){
+							for(int u = 0; u<difference.size(); u++){//columns of difference
+								difference.get(u).add(new String(columns2.get(u).get(t)));
+							}
+						}
+					}
+					for(int t = 2; t<columns1.get(0).size(); t++){//column2 row
+						boolean completeUniqe = true;
+						for(int p = 2; p < columns2.get(0).size(); p++){// rows of difference
+							boolean uniqe = false;
+							for(int u = 0; u<columns2.size(); u++){//columns of difference
+								if(!columns1.get(u).get(t).equals(columns2.get(u).get(p)) && !uniqe){
+									uniqe = true;
+								}
+							}
+							if(!uniqe){
+								completeUniqe = false;
+							}
+						}
+						if(completeUniqe){
+							for(int u = 0; u<difference.size(); u++){//columns of difference
+								difference.get(u).add(new String(columns1.get(u).get(t)));
+							}
+						}
+					}
+			}
+			
+			
+		}
 		
 		else if(table2Name == null) {
 			
@@ -1325,6 +1829,37 @@ public class DatabaseEngine{
 		Table created = new Table(tableName,data,key);
 		tables.add(created);
 	}
+	
+	public static void query(String tableName1, String tableName2) {
+		ArrayList<ArrayList<String>> data;
+		
+		for(int i = 0; i<tables.size();i++){
+			if(tables.get(i).title.equals(tableName2)){
+				data = tables.get(i).datas;
+				query(tableName1, data);
+				return;
+			}
+		}
+		
+	}
+	
+	public static void query(String tableName) {
+		ArrayList<ArrayList<String>> data = selection_results_stack.pop();
+		ArrayList<String> key = new ArrayList<String>();
+		Table created = new Table(tableName,data,key);
+		tables.add(created);
+		
+	}
+	
+	public static void queryUDP(String tableName) {
+		ArrayList<ArrayList<String>> data = table_stack.pop().datas;
+		ArrayList<String> key = new ArrayList<String>();
+		Table created = new Table(tableName,data,key);
+		tables.add(created);
+		
+	}
+	
+	
 	
 	/*public static void main(String[] args) {
 		//starts DatabaseEngine

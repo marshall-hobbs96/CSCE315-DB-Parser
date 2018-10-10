@@ -36,32 +36,279 @@ public class ParserMasterListener extends ParserBaseListener {
 		
 	}*/
 	
+	@Override public void exitExpr(ParserParser.ExprContext ctx) { 
+	
+		List<ParseTree> tree = ctx.children;
+		
+		if((tree.get(0) instanceof ParserParser.SelectionContext) || (tree.get(0) instanceof ParserParser.ProjectionContext) || (tree.get(0) instanceof ParserParser.RenamingContext)) { //must be a selection, rename, or projection
+			
+			
+			
+		}
+		
+		else if((tree.get(0) instanceof ParserParser.UnionContext) || (tree.get(0) instanceof ParserParser.DifferenceContext) || (tree.get(0) instanceof ParserParser.ProductContext)){ //must be a union or difference or product
+			
+			
+			
+		}
+		
+		else{	//must be an atomic expression, don't really need to do anything.
+			
+			
+			
+			
+		}
+	
+	}
+	
+	
+	
+	@Override public void exitQuery(ParserParser.QueryContext ctx) { 
+	
+		List<ParseTree> tree = ctx.children;
+		String new_relation = tree.get(0).getText();
+		
+		if((tree.get(2).getChild(0).getPayload() instanceof ParserParser.SelectionContext) || (tree.get(2).getChild(0).getPayload() instanceof ParserParser.ProjectionContext) || (tree.get(2).getChild(0).getPayload() instanceof ParserParser.RenamingContext)) { //must be a selection, rename, or projection
+			
+			if(tree.get(2).getChild(0).getPayload() instanceof ParserParser.SelectionContext) {
+				
+				
+				
+			}
+			
+			else if(tree.get(2).getChild(0).getPayload() instanceof ParserParser.ProjectionContext){
+				
+				ParseTree renaming_tree = tree.get(2).getChild(0);
+				String table_name = renaming_tree.getChild(4).getText();
+				ParseTree operands = renaming_tree.getChild(2);
+				ArrayList<String> columns = new ArrayList<String>(); 
+				
+				for(int i = 0; i < operands.getChildCount(); i++){
+					
+					String operand = operands.getChild(i).getText();
+					columns.add(operand);
+					
+				}
+				
+				//DatabaseEngine.query(new_relation, table_name);
+				ArrayList<ArrayList<String>> data = DatabaseEngine.projectionD(table_name, columns);
+				ArrayList<String> pkey = new ArrayList<String>();
+				DatabaseEngine.createD(new_relation, data, pkey);
+				return;
+				
+			}
+			
+			else if(tree.get(2).getChild(0).getPayload() instanceof ParserParser.RenamingContext){
+				
+				ParseTree renaming_tree = tree.get(2).getChild(0);
+				String table_name = renaming_tree.getChild(4).getText();
+				ParseTree operands = renaming_tree.getChild(2);
+				String old_name = operands.getChild(0).getText();
+				String new_name = operands.getChild(2).getText();
+				DatabaseEngine.query(new_relation, table_name);
+				DatabaseEngine.renamingD(new_relation, old_name, new_name);
+				return;
+				
+				
+			}
+			
+		}
+		
+		else if((tree.get(2).getChild(0).getPayload() instanceof ParserParser.UnionContext) || (tree.get(2).getChild(0).getPayload() instanceof ParserParser.DifferenceContext) || (tree.get(2).getChild(0).getPayload() instanceof ParserParser.ProductContext)){ //must be a union or difference or product
+			
+			String table_name = tree.get(0).getText();
+			DatabaseEngine.queryUDP(table_name);
+		}
+		
+		else{	//must be an atomic expression, don't really need to do anything.
+			
+			String table_name1 = tree.get(0).getText();
+			String table_name2 = tree.get(2).getText();
+			DatabaseEngine.query(table_name1, table_name2);
+			
+		}
+	
+	}
 
 
+	@Override public void enterSelection(ParserParser.SelectionContext ctx) {
 
-	@Override public void enterSelection(ParserParser.SelectionContext ctx) { }
+		List<ParseTree> tree = ctx.children;
+		String table_name = tree.get(4).getText();
+		
+		DatabaseEngine.enterSelect(table_name);
+		return;
+	
+	}
 
-	@Override public void exitSelection(ParserParser.SelectionContext ctx) { }
+	@Override public void exitSelection(ParserParser.SelectionContext ctx) { 
+	
+		List<ParseTree> tree = ctx.children;
+		
+		String table_name = tree.get(4).getText();
+		
+		DatabaseEngine.selectionD(table_name);
+		
+		return;
+	
+	}
+	
+	@Override public void enterProjection(ParserParser.ProjectionContext ctx) { 
+	
+		List<ParseTree> tree = ctx.children;
+		String table_name = tree.get(4).getText();
+		
+		DatabaseEngine.enterSelect(table_name);
+		return;
+	
+	}
+	
+	@Override public void exitProjection(ParserParser.ProjectionContext ctx) { }
+	
+	@Override public void enterRenaming(ParserParser.RenamingContext ctx) {
+
+
+	}
+	
+	@Override public void exitRenaming(ParserParser.RenamingContext ctx) { }
 
 	@Override public void enterCondition(ParserParser.ConditionContext ctx) { }
 
-	@Override public void exitCondition(ParserParser.ConditionContext ctx) { }
+	@Override public void exitCondition(ParserParser.ConditionContext ctx) { 
+	
+		int i = ctx.getChildCount();
+		
+		if(i == 1){
+			
+			//dont need to do anything, only one conjunction present in condition
+			DatabaseEngine.or2();
+			
+		}
+		
+		else {	//Here we do things, because our condition contains two or more conunctions with one or more condidition operators
+		
+			i = (i - 1) / 2;
+		
+			for(int j = 1; j < i; j++){
+				
+				DatabaseEngine.or1();
+			
+			}
+			
+			DatabaseEngine.or();
+			
+		}
+	
+	}
 
 	@Override public void enterConjunction(ParserParser.ConjunctionContext ctx) { }
 	
-	@Override public void exitConjunction(ParserParser.ConjunctionContext ctx) { }
+	@Override public void exitConjunction(ParserParser.ConjunctionContext ctx) { 
+	
+		int i = ctx.getChildCount();
+		
+		if(i == 1){
+			
+			//We don't need to do anything, only one comparison present in conjunction
+			DatabaseEngine.and2();
+			
+		}
+		
+		else { //Here we do things, because our conjunction contains two or more comparisons with one or more conjunction operations
+			
+			i = (i - 1) / 2;
+			
+			for(int j = 1; j < i; j++){
+				
+				DatabaseEngine.and1();
+				
+			}
+			
+			DatabaseEngine.and();
+			
+		}
+		
+	
+	}
 
 	@Override public void enterComparison(ParserParser.ComparisonContext ctx) { }
 
-	@Override public void exitComparison(ParserParser.ComparisonContext ctx) { }
+	@Override public void exitComparison(ParserParser.ComparisonContext ctx) {
 
-	@Override public void enterProjection(ParserParser.ProjectionContext ctx) { }
+		List<ParseTree> tree = ctx.children;
+		ArrayList<String> result = new ArrayList<String>();
+		
+		String op = tree.get(1).getText();
+		String operand1 = tree.get(0).getText();
+		String operand2 = tree.get(2).getText();
+		
+		if(tree.get(2).getChild(0).getChildCount() > 1){
+			
+			if(tree.get(2).getChild(0).getChild(0).getText().equals("\"")) {
+				
+				operand2 = tree.get(2).getChild(0).getChild(1).getText();
+				
+			}
+			
+			else{
+				
+				operand2 = "";
+				
+				for(int i = 0; i < tree.get(2).getChild(0).getChildCount(); i++) {
+					
+					operand2 = operand2 + tree.get(2).getChild(0).getChild(i).getText();
+					
+				}
+				
+			}
+			
+		}
+		
+		
+		if(op.equals("==")) {
+			
+			result = DatabaseEngine.equal(operand1, operand2);
+			
+		}
+		
+		else if(op.equals("!=")) {
+			
+			result = DatabaseEngine.notEqual(operand1, operand2);
+			
+		}
+		
+		else if(op.equals("<")) {
+			
+			result = DatabaseEngine.less(operand1, operand2);
+			
+		}
+		
+		else if(op.equals(">")) {
+			
+			result = DatabaseEngine.greater(operand1, operand2);
+			
+		}
+		
+		else if(op.equals("<=")) {
+			
+			result = DatabaseEngine.lessEqual(operand1, operand2);
+			
+		}
+		
+		else if(op.equals(">=")) {
+			
+			result = DatabaseEngine.greaterEqual(operand1, operand2);
+		
+		}
+		
+		else {
+			
+			//should never happen
+			
+		}
+	
+	}
 
-	@Override public void exitProjection(ParserParser.ProjectionContext ctx) { }
-
-	@Override public void enterRenaming(ParserParser.RenamingContext ctx) { }
-
-	@Override public void exitRenaming(ParserParser.RenamingContext ctx) { }
 
 	@Override public void enterUnion(ParserParser.UnionContext ctx) { }
 
@@ -71,21 +318,33 @@ public class ParserMasterListener extends ParserBaseListener {
 		
 		ArrayList<ArrayList<String>> new_datas = new ArrayList<ArrayList<String>>();
 		
-		if(tree.get(2).getChildCount() <= 1) {
+		if((tree.get(0).getChildCount() <= 1) && (tree.get(2).getChildCount() <= 1)) {
 			
 			new_datas = DatabaseEngine.unionD(tree.get(0).getText(), tree.get(2).getText());
 
 		}
 		
-		else if ((tree.get(0).getChildCount() > 1) && (tree.get(0).getChildCount() > 1)) {
+		else if ((tree.get(0).getChildCount() > 1) && (tree.get(2).getChildCount() > 1)) {
 			
 			new_datas = DatabaseEngine.unionD(null, null);
 			
 		} 
 		
-		else {
+		else if((tree.get(0).getChildCount() > 1) && (tree.get(2).getChildCount() <= 1)) {
+			
+			new_datas = DatabaseEngine.unionD(tree.get(2).getText(), null);
+			
+		}
+		
+		else if((tree.get(0).getChildCount() <= 1) && (tree.get(0).getChildCount() > 1)) {
 			
 			new_datas = DatabaseEngine.unionD(tree.get(0).getText(), null);
+			
+		}
+		
+		else {
+			
+			//shouldnt happen
 			
 		}
 		
@@ -101,21 +360,33 @@ public class ParserMasterListener extends ParserBaseListener {
 		
 		ArrayList<ArrayList<String>> new_datas = new ArrayList<ArrayList<String>>();
 		
-		if(tree.get(2).getChildCount() <= 1) {
+		if((tree.get(0).getChildCount() <= 1) && (tree.get(2).getChildCount() <= 1)) {
 			
 			new_datas = DatabaseEngine.differenceD(tree.get(0).getText(), tree.get(2).getText());
+
+		}
+		
+		else if ((tree.get(0).getChildCount() > 1) && (tree.get(2).getChildCount() > 1)) {
+			
+			new_datas = DatabaseEngine.differenceD(null, null);
+			
+		} 
+		
+		else if((tree.get(0).getChildCount() > 1) && (tree.get(2).getChildCount() <= 1)) {
+			
+			new_datas = DatabaseEngine.differenceD(tree.get(2).getText(), null);
 			
 		}
 		
-		else if((tree.get(2).getChildCount() > 1) && (tree.get(0).getChildCount() > 1)) {
+		else if((tree.get(0).getChildCount() <= 1) && (tree.get(0).getChildCount() > 1)) {
 			
-			new_datas = DatabaseEngine.differenceD(null, null);
-
+			new_datas = DatabaseEngine.differenceD(tree.get(0).getText(), null);
+			
 		}
 		
 		else {
 			
-			new_datas = DatabaseEngine.differenceD(tree.get(0).getText(), null);
+			//shouldnt happen
 			
 		}
 		
@@ -131,21 +402,33 @@ public class ParserMasterListener extends ParserBaseListener {
 		
 		ArrayList<ArrayList<String>> new_datas = new ArrayList<ArrayList<String>>();
 		
-		if(tree.get(2).getChildCount() <= 1) {
+		if((tree.get(0).getChildCount() <= 1) && (tree.get(2).getChildCount() <= 1)) {
 			
 			new_datas = DatabaseEngine.productD(tree.get(0).getText(), tree.get(2).getText());
 
 		}
 		
-		else if((tree.get(0).getChildCount() > 1) && (tree.get(0).getChildCount() > 1)) {
+		else if ((tree.get(0).getChildCount() > 1) && (tree.get(2).getChildCount() > 1)) {
 			
 			new_datas = DatabaseEngine.productD(null, null);
+			
+		} 
+		
+		else if((tree.get(0).getChildCount() > 1) && (tree.get(2).getChildCount() <= 1)) {
+			
+			new_datas = DatabaseEngine.productD(tree.get(2).getText(), null);
+			
+		}
+		
+		else if((tree.get(0).getChildCount() <= 1) && (tree.get(0).getChildCount() > 1)) {
+			
+			new_datas = DatabaseEngine.productD(tree.get(0).getText(), null);
 			
 		}
 		
 		else {
 			
-			new_datas = DatabaseEngine.productD(tree.get(0).getText(), null);
+			//shouldnt happen
 			
 		}
 		
@@ -308,8 +591,20 @@ public class ParserMasterListener extends ParserBaseListener {
 			for(int i = 0; i < ((tree.size() - 4) / 2); i++ ){
 				
 				ParseTree literal = tree.get(count);
-				element.add(literal.getText());
-				count = count + 2;
+				
+				if((literal.getChild(0).getText().equals("\"") != true)) {
+					
+					element.add(literal.getText());
+					count = count + 2;
+					
+				}
+				
+				else {
+					
+					element.add(literal.getChild(1).getText());
+					count = count + 2;
+					
+				}
 				
 			}
 			
